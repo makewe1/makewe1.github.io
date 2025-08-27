@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Makeway</title>
+  
+  
+  <link href="https://makewe1.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://makewe1.github.io/"/>
+  <updated>2025-08-26T12:22:30.624Z</updated>
+  <id>https://makewe1.github.io/</id>
+  
+  <author>
+    <name>makewe1</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
+    <link href="https://makewe1.github.io/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/"/>
+    <id>https://makewe1.github.io/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/</id>
+    <published>2025-08-26T11:50:00.000Z</published>
+    <updated>2025-08-26T12:22:30.624Z</updated>
+    
+    <content type="html"><![CDATA[<p>Do you want to start your own blog for free?<br>In this tutorial, I’ll show you how to build a blog <strong>from scratch</strong> using <a href="https://hexo.io/">Hexo</a> (a fast, Node.js-based blogging framework) and deploy it to <strong>GitHub Pages</strong> for free hosting.</p><hr><h2 id="Step-0-Install-Node-js">Step 0: Install Node.js</h2><p>Check if Node.js and npm are installed:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure><p>If missing (or you want a specific version), install via NodeSource. Example for Node 22:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://deb.nodesource.com/setup_22.x | <span class="built_in">sudo</span> -E bash -</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs</span><br></pre></td></tr></tbody></table></figure><p>Verify installation:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure><hr><h2 id="Step-1-Install-Hexo-Create-Your-Blog">Step 1: Install Hexo &amp; Create Your Blog</h2><p>Install Hexo CLI globally:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g hexo-cli</span><br></pre></td></tr></tbody></table></figure><p>Create a new blog project:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></tbody></table></figure><p>Or use the current folder:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init .</span><br></pre></td></tr></tbody></table></figure><hr><h2 id="Step-2-Write-Your-First-Blog-Post">Step 2: Write Your First Blog Post</h2><p>Create a new post:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new post <span class="string">"Hello World"</span></span><br></pre></td></tr></tbody></table></figure><p>Edit the generated file <code>source/_posts/hello-world.md</code>:</p><figure class="highlight markdown"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2025-08-26 22:00:00</span><br><span class="line"><span class="section">tags: [Intro]</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"></span><br><span class="line">Welcome to my first Hexo blog post!   </span><br><span class="line">This is written in <span class="strong">**Markdown**</span>.</span><br></pre></td></tr></tbody></table></figure><p>Preview locally:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure><p>Visit: <a href="http://localhost:4000">http://localhost:4000</a></p><hr><h2 id="Step-3-Install-a-Theme">Step 3: Install a Theme</h2><p>Install the <strong>Next</strong> theme:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></tbody></table></figure><p>Edit <code>_config.yml</code>:</p><figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></tbody></table></figure><p>Restart:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure><hr><h2 id="Step-4-Deploy-to-GitHub-Pages">Step 4: Deploy to GitHub Pages</h2><p>Create a repo on GitHub (e.g. <code>my-blog</code>).<br>If your username is <code>yourname</code>:</p><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://yourname.github.io/my-blog/</span><br></pre></td></tr></tbody></table></figure><p>Install deployer:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></tbody></table></figure><p>Edit <code>_config.yml</code>:</p><figure class="highlight yaml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/yourname/my-blog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">gh-pages</span></span><br></pre></td></tr></tbody></table></figure><p>Deploy:</p><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></tbody></table></figure><hr><h2 id="Step-5-Extra-Tweaks">Step 5: Extra Tweaks</h2><p>Apple-style fonts:</p><figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> {</span><br><span class="line">  <span class="attribute">font-family</span>: -apple-system, BlinkMacSystemFont, <span class="string">"Helvetica Neue"</span>, Arial, sans-serif;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure><p>Custom domain: create <code>source/CNAME</code> with your domain name.</p><p>SEO &amp; Analytics: configure in theme <code>_config.yml</code>.</p><hr>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;Do you want to start your own blog for free?&lt;br&gt;
+In this tutorial, I’ll show you how to build a blog &lt;strong&gt;from scratch&lt;/strong&gt; using </summary>
+      
+    
+    
+    
+    <category term="Guides" scheme="https://makewe1.github.io/categories/Guides/"/>
+    
+    <category term="Web Development" scheme="https://makewe1.github.io/categories/Guides/Web-Development/"/>
+    
+    
+    <category term="Hexo" scheme="https://makewe1.github.io/tags/Hexo/"/>
+    
+    <category term="GitHub Pages" scheme="https://makewe1.github.io/tags/GitHub-Pages/"/>
+    
+    <category term="Blogging" scheme="https://makewe1.github.io/tags/Blogging/"/>
+    
+    <category term="Tutorial" scheme="https://makewe1.github.io/tags/Tutorial/"/>
+    
+  </entry>
+  
+</feed>
