@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CS:APP 15213 Data Lab Guide</title>
+    <url>/2025/08/28/essays/15-213%20data-lab/</url>
+    <content><![CDATA[<h2 id="logicalNeg">logicalNeg</h2>
+<h3 id="Step-1-—-Define-the-goal">Step 1 — Define the goal</h3>
+<p>We need a function that acts like logical <code>!x</code> without using the <code>!</code> operator:</p>
+<ul>
+<li>If <code>x == 0</code>, return <strong>1</strong></li>
+<li>If <code>x != 0</code>, return <strong>0</strong></li>
+</ul>
+<h3 id="Step-2-—-Find-the-unique-bit-feature-of-0">Step 2 — Find the unique bit feature of 0</h3>
+<p>We notice that for <code>x == 0</code>, both <code>x</code> and <code>-x</code> are <code>0</code>, so their sign bit is <code>0</code>.<br>
+For any <code>x != 0</code>, either <code>x</code> or <code>-x</code> is negative, so at least one sign bit is <code>1</code>.</p>
+<p>This means <code>(x | -x)</code> will have sign bit = <code>0</code> only when <code>x == 0</code>,<br>
+and sign bit = <code>1</code> for any <code>x != 0</code>.</p>
+<p>Since <code>-x</code> must be expressed using allowed operators,<br>
+we write it as <code>~x + 1</code> (two’s complement negation).</p>
+<h3 id="Step-3-—-Turn-the-sign-bit-into-0-1">Step 3 — Turn the sign bit into 0/1</h3>
+<p>We have two methods:</p>
+<h4 id="Method-1-—-Use-1-and-1">Method 1 — Use <code>&amp; 1</code> and <code>^ 1</code></h4>
+<p><code>(((~x + 1) | x) &gt;&gt; 31) &amp; 1</code> gives <strong>1</strong> when <code>x != 0</code>, <strong>0</strong> when <code>x == 0</code>.<br>
+Flip to match logical NOT:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">((((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) &amp; <span class="number">1</span>) ^ <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<h4 id="Method-2-—-Add-1-Cleaner-Way">Method 2 — Add 1 (Cleaner Way)</h4>
+<p>When we do an arithmetic right shift by 31 bits:</p>
+<ul>
+<li>For any nonzero <code>x</code>, <code>(((~x + 1) | x) &gt;&gt; 31)</code> gives <strong>-1</strong> (all bits = 1).</li>
+<li>For <code>x == 0</code>, the result is <strong>0</strong>.</li>
+</ul>
+<p>So if we simply add 1:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">(((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) + <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>]]></content>
+      <categories>
+        <category>CMU 15-213</category>
+      </categories>
+      <tags>
+        <tag>C</tag>
+        <tag>Computer Science</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
     <url>/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/</url>
     <content><![CDATA[<p>Do you want to start your own blog for free?<br>
