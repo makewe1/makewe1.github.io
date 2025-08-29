@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://makewe1.github.io/2025/08/28/essays/15-213%20data-lab/</loc>
+    <loc>https://makewe1.github.io/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/</loc>
     
     <lastmod>2025-08-29</lastmod>
     
@@ -11,7 +11,25 @@
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/</loc>
+    <loc>https://makewe1.github.io/index.html</loc>
+    
+    <lastmod>2025-08-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://makewe1.github.io/2025/08/28/CMU%2015-213/15-213%20data-lab/</loc>
+    
+    <lastmod>2025-08-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://makewe1.github.io/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</loc>
     
     <lastmod>2025-08-27</lastmod>
     
@@ -21,15 +39,6 @@
   
   <url>
     <loc>https://makewe1.github.io/home/index.html</loc>
-    
-    <lastmod>2025-08-27</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://makewe1.github.io/index.html</loc>
     
     <lastmod>2025-08-27</lastmod>
     
@@ -65,13 +74,6 @@
 
   
   <url>
-    <loc>https://makewe1.github.io/tags/Hexo/</loc>
-    <lastmod>2025-08-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://makewe1.github.io/tags/C/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -85,17 +87,38 @@
     <priority>0.2</priority>
   </url>
   
-
-  
   <url>
-    <loc>https://makewe1.github.io/categories/Guides/</loc>
+    <loc>https://makewe1.github.io/tags/DataStructure-Algorithms/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
+    <loc>https://makewe1.github.io/tags/Hexo/</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+
+  
+  <url>
     <loc>https://makewe1.github.io/categories/CMU-15-213/</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://makewe1.github.io/categories/DataStructure-Algorithms/</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://makewe1.github.io/categories/Guides/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

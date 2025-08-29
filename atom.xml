@@ -6,7 +6,7 @@
   <link href="https://makewe1.github.io/atom.xml" rel="self"/>
   
   <link href="https://makewe1.github.io/"/>
-  <updated>2025-08-29T02:22:33.089Z</updated>
+  <updated>2025-08-29T04:34:03.541Z</updated>
   <id>https://makewe1.github.io/</id>
   
   <author>
@@ -17,9 +17,34 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Dynamic Programming Notes</title>
+    <link href="https://makewe1.github.io/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/"/>
+    <id>https://makewe1.github.io/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/</id>
+    <published>2025-08-29T04:03:18.000Z</published>
+    <updated>2025-08-29T04:34:03.541Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="1-DP-Dependencies">1. DP Dependencies</h2><p>In <strong>Dynamic Programming (DP)</strong>, each state often depends on results from <strong>smaller subproblems</strong>.<br>The order you compute states matters because <strong>dependencies must be ready first</strong>.</p><h3 id="Key-Takeaways">Key Takeaways</h3><ul><li><p>Always compute dependencies first.</p></li><li><p>DP fails if you process states in the wrong order.</p></li></ul><h3 id="Loop-Order-Examples">Loop Order Examples</h3><p><strong>Original sequence (wrong, dependencies not ready):</strong></p><figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):           <span class="comment"># i = 0 → n-1 (increasing)</span></span><br><span class="line">    dp[i][i] = <span class="literal">True</span></span><br><span class="line">    ans += <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i + <span class="number">1</span>, n):    <span class="comment"># j &gt; i</span></span><br><span class="line">        <span class="keyword">if</span> j - i == <span class="number">1</span>:</span><br><span class="line">            dp[i][j] = (s[i] == s[j])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            dp[i][j] = (s[i] == s[j]) <span class="keyword">and</span> dp[i+<span class="number">1</span>][j-<span class="number">1</span>]   <span class="comment"># dp[i+1][j-1] may not be ready!</span></span><br><span class="line">        <span class="keyword">if</span> dp[i][j]:</span><br><span class="line">            ans += <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure><p><strong>Reversed sequence (correct, dependencies ready):</strong></p><figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>):  <span class="comment"># i = n-1 → 0 (decreasing)</span></span><br><span class="line">    dp[i][i] = <span class="literal">True</span></span><br><span class="line">    ans += <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i + <span class="number">1</span>, n):    <span class="comment"># j &gt; i</span></span><br><span class="line">        <span class="keyword">if</span> j - i == <span class="number">1</span>:</span><br><span class="line">            dp[i][j] = (s[i] == s[j])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            dp[i][j] = (s[i] == s[j]) <span class="keyword">and</span> dp[i+<span class="number">1</span>][j-<span class="number">1</span>]   <span class="comment"># dp[i+1][j-1] always ready now</span></span><br><span class="line">        <span class="keyword">if</span> dp[i][j]:</span><br><span class="line">            ans += <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure><hr>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;1-DP-Dependencies&quot;&gt;1. DP Dependencies&lt;/h2&gt;
+&lt;p&gt;In &lt;strong&gt;Dynamic Programming (DP)&lt;/strong&gt;, each state often depends on results from</summary>
+      
+    
+    
+    
+    <category term="DataStructure-Algorithms" scheme="https://makewe1.github.io/categories/DataStructure-Algorithms/"/>
+    
+    
+    <category term="DataStructure Algorithms" scheme="https://makewe1.github.io/tags/DataStructure-Algorithms/"/>
+    
+  </entry>
+  
+  <entry>
     <title>CS:APP 15213 Data Lab Guide</title>
-    <link href="https://makewe1.github.io/2025/08/28/essays/15-213%20data-lab/"/>
-    <id>https://makewe1.github.io/2025/08/28/essays/15-213%20data-lab/</id>
+    <link href="https://makewe1.github.io/2025/08/28/CMU%2015-213/15-213%20data-lab/"/>
+    <id>https://makewe1.github.io/2025/08/28/CMU%2015-213/15-213%20data-lab/</id>
     <published>2025-08-27T23:00:00.000Z</published>
     <updated>2025-08-29T02:22:33.089Z</updated>
     
@@ -46,8 +71,8 @@
   
   <entry>
     <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
-    <link href="https://makewe1.github.io/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/"/>
-    <id>https://makewe1.github.io/2025/08/26/essays/Building-a-Blog-with-GitHub-and-Hexo/</id>
+    <link href="https://makewe1.github.io/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/"/>
+    <id>https://makewe1.github.io/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</id>
     <published>2025-08-26T11:50:00.000Z</published>
     <updated>2025-08-27T06:18:50.221Z</updated>
     
