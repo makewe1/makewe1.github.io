@@ -65,6 +65,13 @@
 
   
   <url>
+    <loc>https://makewe1.github.io/tags/Hexo/</loc>
+    <lastmod>2025-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://makewe1.github.io/tags/C/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
@@ -78,24 +85,17 @@
     <priority>0.2</priority>
   </url>
   
-  <url>
-    <loc>https://makewe1.github.io/tags/Hexo/</loc>
-    <lastmod>2025-08-29</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
 
   
   <url>
-    <loc>https://makewe1.github.io/categories/CMU-15-213/</loc>
+    <loc>https://makewe1.github.io/categories/Guides/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/categories/Guides/</loc>
+    <loc>https://makewe1.github.io/categories/CMU-15-213/</loc>
     <lastmod>2025-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
