@@ -75,14 +75,6 @@ Flip to match logical NOT:</p>
 <li>If not, we keep searching the lower half.</li>
 </ul>
 <p>We use <code>!!(expr)</code> to normalize to <code>0</code> or <code>1</code>, and then shift that <code>1</code> by a power-of-two to add <code>16</code>, <code>8</code>, <code>4</code>, <code>2</code>, or <code>1</code> to the answer without branches.</p>
-<h3 id="Binary-search-on-bit-ranges-2">Binary search on bit ranges</h3>
-<p>We check chunks 16, 8, 4, 2, 1 bits to find where the top <code>1</code> lives. Each step says:</p>
-<ul>
-<li>“Is there any <code>1</code> in the upper half?”</li>
-<li>If yes, we advance the count and shift <code>x</code> down into that half.</li>
-<li>If not, we keep searching the lower half.</li>
-</ul>
-<p>We use <code>!!(expr)</code> to normalize to <code>0</code> or <code>1</code>, and then shift that <code>1</code> by a power-of-two to add <code>16</code>, <code>8</code>, <code>4</code>, <code>2</code>, or <code>1</code> to the answer without branches.</p>
 <h3 id="Always-add-one-sign-bit">Always add one sign bit</h3>
 <p>After counting the highest <code>1</code> bit, we always add <strong>one more bit</strong> for the sign.</p>
 <p>This covers all cases:</p>
