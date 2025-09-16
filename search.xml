@@ -124,6 +124,7 @@ This provides:</p>
 <li>They never get deleted → memory leak.</li>
 </ul>
 <figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> { shared_ptr&lt;Node&gt; other; };</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">auto</span> a = <span class="built_in">make_shared</span>&lt;Node&gt;(); <span class="comment">// a:1</span></span><br><span class="line">    <span class="keyword">auto</span> b = <span class="built_in">make_shared</span>&lt;Node&gt;(); <span class="comment">// b:1</span></span><br><span class="line">    a-&gt;other = b; <span class="comment">// b:2</span></span><br><span class="line">    b-&gt;other = a; <span class="comment">// a:2</span></span><br><span class="line">    cout &lt;&lt; a.<span class="built_in">use_count</span>() &lt;&lt; <span class="string">" "</span> &lt;&lt; b.<span class="built_in">use_count</span>(); <span class="comment">// 2 2</span></span><br><span class="line">} <span class="comment">// a,b go out of scope but not deleted (cycle)</span></span><br></pre></td></tr></tbody></table></figure>
+<hr>
 <h3 id="std-weak-ptr"><code>std::weak_ptr</code></h3>
 <h4 id="Overview-2">Overview</h4>
 <ul>
@@ -160,6 +161,7 @@ This provides:</p>
 </tr>
 </tbody>
 </table>
+<hr>
 <h3 id="References">References</h3>
 <ul>
 <li>A <strong>reference</strong> is an <strong>alias (second name)</strong> for an existing variable.</li>
@@ -206,6 +208,203 @@ This provides:</p>
 </tr>
 </tbody>
 </table>
+<h3 id="Constructor-in-C-SkipListNode-Example">Constructor in C++ (SkipListNode Example)</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">SkipListNode</span> {</span><br><span class="line">    std::string key;</span><br><span class="line">    std::string value;</span><br><span class="line">    std::vector&lt;std::shared_ptr&lt;SkipListNode&gt;&gt; forward;</span><br><span class="line">    std::vector&lt;std::weak_ptr&lt;SkipListNode&gt;&gt; backward;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">SkipListNode</span>(<span class="type">const</span> std::string&amp; k, <span class="type">const</span> std::string&amp; v, <span class="type">int</span> level)</span><br><span class="line">        : <span class="built_in">key</span>(k), <span class="built_in">value</span>(v), forward(level, <span class="literal">nullptr</span>),</span><br><span class="line">          <span class="built_in">backward</span>(level, std::<span class="built_in">weak_ptr</span>&lt;SkipListNode&gt;()) {}</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li><code>key(k)</code> → initializes <strong>key</strong> with parameter <code>k</code>.</li>
+<li><code>value(v)</code> → initializes <strong>value</strong> with parameter <code>v</code>.</li>
+<li><code>forward(level, nullptr)</code> → creates a <strong>vector of size <code>level</code></strong>, each element a <code>nullptr</code> <code>shared_ptr</code>.</li>
+<li><code>backward(level, std::weak_ptr&lt;SkipListNode&gt;())</code> → creates a <strong>vector of size <code>level</code></strong>, each element an <strong>empty</strong> <code>weak_ptr</code>.</li>
+<li>The <strong>constructor body <code>{}</code> is empty</strong> because all fields are initialized in the <strong>initializer list</strong>.</li>
+</ul>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>k</mi><mo separator="true">,</mo><mi>v</mi><mo separator="true">,</mo><mi mathvariant="normal">ℓ</mi><mo stretchy="false">)</mo><mtext>  </mtext><mo>↦</mo><mtext>  </mtext><mo fence="false" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mi>k</mi><mo separator="true">,</mo><mtext>  </mtext><mi>v</mi><mo separator="true">,</mo><mtext>  </mtext><mo stretchy="false">[</mo><mtext>nullptr</mtext><msup><mo stretchy="false">]</mo><mi mathvariant="normal">ℓ</mi></msup><mo separator="true">,</mo><mtext>  </mtext><mo stretchy="false">[</mo><mtext>empty</mtext><msup><mo stretchy="false">]</mo><mi mathvariant="normal">ℓ</mi></msup><mo fence="false" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo></mrow><annotation encoding="application/x-tex">
+(k, v, \ell) \;\mapsto\; \big( k,\; v,\; [\text{nullptr}]^\ell,\; [\text{empty}]^\ell \big)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">ℓ</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↦</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2491em;vertical-align:-0.35em;"></span><span class="mord"><span class="delimsizing size1">(</span></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">[</span><span class="mord text"><span class="mord">nullptr</span></span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">ℓ</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">[</span><span class="mord text"><span class="mord">empty</span></span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">ℓ</span></span></span></span></span></span></span></span><span class="mord"><span class="delimsizing size1">)</span></span></span></span></span></span>
+<hr>
+<h3 id="Skip-List-Class-Definition">Skip List Class Definition</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Skip List class</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SkipList</span> {</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::shared_ptr&lt;SkipListNode&gt; head; <span class="comment">// head node of the skip list</span></span><br><span class="line">    <span class="type">int</span> max_level;                      <span class="comment">// maximum level of the skip list</span></span><br><span class="line">    <span class="type">int</span> current_level;                  <span class="comment">// current level of the skip list</span></span><br><span class="line">    <span class="type">size_t</span> size_bytes;                  <span class="comment">// memory usage in bytes</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">SkipList</span>(<span class="type">int</span> max_lvl = <span class="number">16</span>);         <span class="comment">// constructor, default max level is 16</span></span><br><span class="line">    <span class="comment">// ... other methods will be defined later</span></span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li>Defines a <strong>class</strong> named <code>SkipList</code>.</li>
+<li>This class represents the <strong>entire skip list structure</strong>, not just a single node.</li>
+</ul>
+<h4 id="Private-Members">Private Members</h4>
+<ul>
+<li><strong>Only accessible inside the class</strong>, hidden from external code.</li>
+<li>Used to store the <strong>internal state</strong> of the skip list.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>head</code></td>
+<td><code>std::shared_ptr&lt;SkipListNode&gt;</code></td>
+<td>The <strong>head (sentinel) node</strong> of the skip list, entry point for all levels</td>
+</tr>
+<tr>
+<td><code>max_level</code></td>
+<td><code>int</code></td>
+<td>The <strong>maximum number of levels</strong> the skip list can have</td>
+</tr>
+<tr>
+<td><code>current_level</code></td>
+<td><code>int</code></td>
+<td>The <strong>highest level currently used</strong> in the skip list</td>
+</tr>
+<tr>
+<td><code>size_bytes</code></td>
+<td><code>size_t</code></td>
+<td>Tracks <strong>memory usage</strong> (optional bookkeeping)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="Public-Members">Public Members</h4>
+<ul>
+<li><strong>Accessible from outside</strong> the class.</li>
+<li>Provides the <strong>interface</strong> for creating and using the skip list.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SkipList(int max_lvl = 16)</code></td>
+<td><strong>Constructor</strong> to initialize the skip list. Defaults to <code>max_lvl = 16</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="Why-We-Do-This">Why We Do This</h4>
+<ul>
+<li>
+<p><strong>Encapsulation:</strong><br>
+Internal details (nodes, size, levels) are kept <code>private</code> so they can’t be modified incorrectly from outside.</p>
+</li>
+<li>
+<p><strong>Clear interface:</strong><br>
+Only safe, controlled operations will be exposed through <code>public</code> methods later (insert, search, delete).</p>
+</li>
+<li>
+<p><strong>Head node:</strong><br>
+The head sentinel simplifies logic — every level starts from this single node.</p>
+</li>
+<li>
+<p><strong>max/current levels:</strong><br>
+Allow the skip list to work like a <strong>multi-level linked list</strong> and support <strong>fast search <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></strong>.</p>
+</li>
+</ul>
+<hr>
+<h1>Skip List Impementaion</h1>
+<h2 id="Core-Operation-Implementation">Core Operation Implementation</h2>
+<h3 id="Insert-or-update-function">Insert or update function</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Insert or update a key-value pair in the skip list</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SkipList::put</span><span class="params">(<span class="type">const</span> std:: string &amp;key, <span class="type">const</span> std::string &amp;value)</span> </span>{</span><br><span class="line">    <span class="comment">// Create an update vector to track the last node visited at each level</span></span><br><span class="line">    std::vector&lt;std::shared_ptr&lt;SkipListNode&gt;&gt; <span class="built_in">update</span>(max_level, <span class="literal">nullptr</span>);</span><br><span class="line">    <span class="keyword">auto</span> current = head;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Traverse from top level down to level 0 to find insertion point</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = current_level - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {</span><br><span class="line">        <span class="keyword">while</span> (current-&gt;forward[i] &amp;&amp; current-&gt;forward[i]-&gt;key &lt; key) {</span><br><span class="line">            current = current-&gt;forward[i]; <span class="comment">// Move forward if next key is still less than target key</span></span><br><span class="line">        }</span><br><span class="line">        update[i] = current; <span class="comment">// Remember the last node before the insertion point at this level</span></span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Now current points to the next node at level 0</span></span><br><span class="line">    current = current-&gt;forward[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If key already exists, update its value and adjust size tracking</span></span><br><span class="line">    <span class="keyword">if</span> (current &amp;&amp; current-&gt;key == key) {</span><br><span class="line">        size_bytes += value.<span class="built_in">size</span>() - current-&gt;value.<span class="built_in">size</span>();</span><br><span class="line">        current-&gt;value = value;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Otherwise, create a new node with random level</span></span><br><span class="line">    <span class="type">int</span> new_level = <span class="built_in">random_level</span>();</span><br><span class="line">    <span class="keyword">if</span> (new_level &gt; current_level) {</span><br><span class="line">        <span class="comment">// If new node's level is greater than current lest level,</span></span><br><span class="line">        <span class="comment">// initialize the update pointers at these higher levels to head</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = current_level; i &lt; new_level; ++i) {</span><br><span class="line">            update[i] = head;</span><br><span class="line">        }</span><br><span class="line">        current_level = new_level; <span class="comment">// Update the current highest level</span></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create the new node and add its size</span></span><br><span class="line">    <span class="keyword">auto</span> new_node = std::<span class="built_in">make_shared</span>&lt;SkipListNde&gt;(key, value, new_level);</span><br><span class="line">    size_bytes += key.<span class="built_in">size</span>() + value.<span class="built_in">size</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Insert the new node by updateing forward pointers at each level</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; new_level; ++i) {</span><br><span class="line">        new_node-&gt;forward[i] = updata[i]-&gt;forward[i];</span><br><span class="line">        update[i]-&gt;forward[i] = new_node;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set backward pointers</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; new_level; ++i) {</span><br><span class="line">        <span class="keyword">if</span> (new_node-&gt;forward[i]) {</span><br><span class="line">            new_node-&gt;forward[i]-&gt;<span class="built_in">set_backward</span>(i, new_node);</span><br><span class="line">        }</span><br><span class="line">        new_node-&gt;<span class="built_in">set_backward</span>(i, update[i]);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h3 id="Retrieve-function">Retrieve function</h3>
+<h4 id="Code">Code</h4>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Retrieve the value associated with a key in the skip list</span></span><br><span class="line"><span class="function">std::optional&lt;std::string&gt; <span class="title">SkipList::get</span><span class="params">(<span class="type">const</span> std::string &amp;key)</span> </span>{</span><br><span class="line">  <span class="comment">// Optional shared (read) lock for thread-safe access.</span></span><br><span class="line">  <span class="comment">// std::shared_lock&lt;std::shared_mutex&gt; slock(rw_mutex);</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> current = head; <span class="comment">// Start from the sentinel head at the topmost level</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Traverse from the current highset level down to level 0</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = current_level - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) {</span><br><span class="line">    <span class="comment">// Move forward at level i as long as the next node exists</span></span><br><span class="line">    <span class="comment">// and its key is less than the target key</span></span><br><span class="line">    <span class="keyword">while</span> (current-&gt;forward[i] &amp;&amp; current-&gt;forward[i]-&gt;key &lt; key) {</span><br><span class="line">      current = current-&gt;forward[i];</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Step to the candidate node at level 0 (the exact-postion check happens</span></span><br><span class="line">  <span class="comment">// here)</span></span><br><span class="line">  current = current-&gt;forward[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">// If the candidate matches the key, return the stored value</span></span><br><span class="line">  <span class="keyword">if</span> (current &amp;&amp; current-&gt;key == key) {</span><br><span class="line">    <span class="keyword">return</span> current-&gt;value;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Otherwise, the key does not exist in the list</span></span><br><span class="line">  <span class="keyword">return</span> std::<span class="literal">nullopt</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="How-to-saerch">How to saerch</h4>
+<ul>
+<li>Start from the <strong>top level</strong> (<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mi>c</mi><mi>u</mi><mi>r</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi mathvariant="normal">_</mi><mi>l</mi><mi>e</mi><mi>v</mi><mi>e</mi><mi>l</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">i = current\_level - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0044em;vertical-align:-0.31em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">u</span><span class="mord mathnormal">rre</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span>)</li>
+<li>At each level <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>:
+<ul>
+<li>Move <strong>forward</strong> while <code>next.key &lt; target.key</code></li>
+<li>If blocked, <strong>go down</strong> to <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">i - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7429em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></li>
+</ul>
+</li>
+<li>This makes <strong>big jumps at high levels</strong> and <strong>small steps at low levels</strong>:</li>
+</ul>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>top</mtext><mtext>  </mtext><mo>⇒</mo><mtext>  </mtext><mtext>bottom:&nbsp;big</mtext><mo>→</mo><mtext>medium</mtext><mo>→</mo><mtext>small&nbsp;steps</mtext></mrow><annotation encoding="application/x-tex">\text{top} \;\Rightarrow\; \text{bottom: big} \to \text{medium} \to \text{small steps}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">top</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">bottom:&nbsp;big</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">medium</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">small&nbsp;steps</span></span></span></span></span></span>
+<h4 id="How-key-Works-in-get-const-std-string-key">How <code>&amp;key</code> Works in <code>get(const std::string &amp;key)</code></h4>
+<ul>
+<li><code>const std::string &amp;key</code> means:
+<ul>
+<li><strong><code>key</code> is a reference (alias) to the input string</strong> passed into the function.</li>
+<li>It does <strong>not copy</strong> the input.</li>
+<li>It is just a <strong>different name</strong> for the same string while inside the function.</li>
+</ul>
+</li>
+</ul>
+<p>Let the caller give an input string <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span>:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>x</mi><mo>=</mo><mtext>"mkw02020202"</mtext></mrow><annotation encoding="application/x-tex">x = \text{"mkw02020202"}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">"mkw02020202"</span></span></span></span></span></span>
+<p>Call:</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">get</span>(x);</span><br></pre></td></tr></tbody></table></figure>
+<p>Inside the function:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">&amp;</mi><mi>k</mi><mi>e</mi><mi>y</mi><mtext>  </mtext><mo>⇒</mo><mtext>  </mtext><mtext>reference&nbsp;to&nbsp;</mtext><mi>x</mi></mrow><annotation encoding="application/x-tex">\&amp;key \;\Rightarrow\; \text{reference to } x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">&amp;</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.03588em;">ey</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">reference&nbsp;to&nbsp;</span></span><span class="mord mathnormal">x</span></span></span></span></span>
+<p>So:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mi>e</mi><mi>y</mi><mo>≡</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">key \equiv x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.03588em;">ey</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span></span>
+<hr>
+<h3 id="SkipList-Iterator">SkipList Iterator</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SkipListIterator</span> : <span class="keyword">public</span> BaseIterator { <span class="comment">// it defines a class called SkipListIterator that inherits publicly from a base class called BaseIterator</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// --- private</span></span><br><span class="line"><span class="comment">// Many other readers are allowed at the same time</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Any writer must wait until all readers finish </span></span><br><span class="line"><span class="comment">// ---</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// Pointer to the current skip list node</span></span><br><span class="line">  std::shared_ptr&lt;SkipListNode&gt; current;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Shared read lock (may be adjusted later for concurrency control)</span></span><br><span class="line">  std::shared_ptr&lt;std::shared_lock&lt;std::shared_mutex&gt;&gt; lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// Constructor: initialize iterator with a starting node</span></span><br><span class="line">  <span class="built_in">SkipListIterator</span>(std::shared_ptr&lt;SkipListNode&gt; node);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Pre-increment: move to the next node and return reference</span></span><br><span class="line">  BaseIterator &amp;<span class="keyword">operator</span>++() <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Equality check: true if both iterators point to the same node</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>==(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Inequality check: true if iterators point to different nodes</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>!=(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Dereference operator: return key-value pair of the current node</span></span><br><span class="line">  value_type <span class="keyword">operator</span>*() <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Identify this iterator as SkipList type</span></span><br><span class="line">  <span class="function">IteratorType <span class="title">get_type</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator is valid (not null and usable)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_valid</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator has reached the end (nullptr)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_end</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the transaction ID associated with the current node</span></span><br><span class="line">  <span class="function"><span class="type">uint64_t</span> <span class="title">get_tranc_id</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the key of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_key</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the value of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_value</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">};</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<h4 id="Code-Explain">Code Explain</h4>
+<p><strong>How the <code>:</code> works in a constructor</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">SkipListIterator::<span class="built_in">SkipListIterator</span>(std::shared_ptr&lt;SkipListNode&gt; node)</span><br><span class="line">    : <span class="built_in">current</span>(node) {}</span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li><code>:</code> introduces the <strong>member initializer list</strong></li>
+<li><code>: current(node)</code> means:<br>
+“When constructing this object, create the member <code>current</code> and initialize it with <code>node</code>.”</li>
+<li>This happens <strong>before</strong> the <code>{ }</code> constructor body runs</li>
+</ul>
+<p><strong>In simple words:</strong></p>
+<ul>
+<li><code>:</code> introduces the <strong>member initializer list</strong></li>
+<li><code>: current(node)</code> means:<br>
+“When constructing this object, create the member <code>current</code> and initialize it with <code>node</code>.”</li>
+<li>This happens <strong>before</strong> the <code>{ }</code> constructor body runs</li>
+</ul>
+<p><strong>In simple words:</strong></p>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>:</mo><mtext>&nbsp;</mtext><mo>→</mo><mtext>&nbsp;initialize&nbsp;member(s)</mtext></mrow><annotation encoding="application/x-tex">:\ \to\ \text{initialize member(s)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mrel">:</span><span class="mspace">&nbsp;</span></span><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span><span class="mspace">&nbsp;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">initialize&nbsp;member(s)</span></span></span></span></span>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">{</mo><mtext>&nbsp;</mtext><mo stretchy="false">}</mo><mtext>&nbsp;</mtext><mo>→</mo><mtext>&nbsp;then&nbsp;run&nbsp;the&nbsp;constructor&nbsp;body</mtext></mrow><annotation encoding="application/x-tex">\{\ \}\ \to\ \text{then run the constructor body}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mspace">&nbsp;</span><span class="mclose">}</span><span class="mspace">&nbsp;</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace">&nbsp;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">then&nbsp;run&nbsp;the&nbsp;constructor&nbsp;body</span></span></span></span></span>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">std::shared_ptr&lt;std::shared_lock&lt;std::shared_mutex&gt;&gt; lock;</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="Mutex">Mutex</h4>
+<p>A <strong>mutex</strong> (short for <strong>mutual exclusion</strong>) is a <strong>lock object</strong> that ensures <strong>only one thread can access a shared resource at a time</strong>.</p>
+<p><strong>Why We Need a Mutex</strong></p>
+<ul>
+<li>When multiple <strong>threads</strong> run at the same time, they may try to <strong>read and write the same data simultaneously</strong>.</li>
+<li>This can cause <strong>race conditions</strong> — leading to <strong>corrupted or unpredictable results</strong>.</li>
+<li>A <strong>mutex</strong> prevents this by <strong>blocking other threads</strong> until the <strong>current thread finishes using the data</strong>.</li>
+</ul>
+<p><strong>How It Works</strong></p>
+<ol>
+<li>
+<p><code>mtx.lock()</code> — Try to take (lock) the mutex</p>
+<ul>
+<li>If it’s <strong>free</strong>, this thread <strong>acquires it</strong>.</li>
+<li>If another thread already has it, this thread <strong>waits (blocks)</strong>.</li>
+</ul>
+</li>
+<li>
+<p><code>mtx.unlock()</code> — <strong>Release the mutex</strong> so other waiting threads can acquire it.<br>
+Only one thread at a time can hold the mutex.</p>
+</li>
+</ol>
+<h4 id="shared-mutex">shared_mutex</h4>
+<p>A <strong>shared mutex</strong> is a special kind of mutex that allows <strong>two modes of locking</strong>:</p>
+<ul>
+<li><strong>Shared (read) mode</strong> — many threads can hold it <strong>at the same time</strong> to <strong>read</strong> shared data safely.</li>
+<li><strong>Exclusive (write) mode</strong> — only <strong>one thread</strong> can hold it, and it <strong>blocks all readers and writers</strong> while it <strong>writes</strong>.</li>
+</ul>
+<p>Because of this behavior, it’s also called a <strong>read–write lock</strong>.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">std::shared_lock&lt;std::shared_mutex&gt;</span><br></pre></td></tr></tbody></table></figure>
+<p>A <strong>lock object</strong> that uses <code>std::shared_mutex</code> in <strong>shared (read) mode</strong>:</p>
+<ul>
+<li>When created, it calls <code>mutex.lock_shared()</code></li>
+<li>When destroyed, it calls <code>mutex.unlock_shared()</code></li>
+<li>Multiple <code>shared_lock</code>s can exist at the same time → <strong>many readers are allowed</strong></li>
+</ul>
+<p><strong>Shared Lock Behavior</strong></p>
+<p>A <strong>shared lock</strong> is specifically made to:</p>
+<ul>
+<li><strong>Allow multiple threads to read at the same time</strong></li>
+<li>While <strong>blocking any writers until all readers are done</strong></li>
+</ul>
 ]]></content>
       <categories>
         <category>AstraKV</category>
