@@ -1,6 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>C++ Note 1</title>
+    <url>/2025/09/16/C++/Note_1/</url>
+    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
+<h4 id="1">1</h4>
+<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
+<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>And inside consts.h you can write:</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
+<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
+<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
+<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
+<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
+For example:</p>
+<ul>
+<li>The <strong>global scope</strong> is outside all functions/classes.</li>
+<li>Each <strong>function</strong> has its own local scope.</li>
+<li>Each <strong>class</strong> has its own member scope.</li>
+<li>Each <strong>namespace</strong> has its own scope.</li>
+</ul>
+<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
+<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>The variable name for your lambda — you can call it like a normal function later</td>
+</tr>
+<tr>
+<td><code>&amp;</code> in <code>[&amp;]</code></td>
+<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
+</tr>
+<tr>
+<td><code>(ParamType p1, ParamType p2, ...)</code></td>
+<td>The <strong>parameter list</strong> with variable names</td>
+</tr>
+<tr>
+<td><code>-&gt; ReturnType</code></td>
+<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
+</tr>
+<tr>
+<td><code>{ ... }</code></td>
+<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
+</tr>
+</tbody>
+</table>
+<hr>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>Note</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Lec00 – Project Overview and Environment Setup</title>
     <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
     <content><![CDATA[<h1>0. Project Overview</h1>
@@ -72,6 +140,154 @@ This provides:</p>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
 <h2 id="1-1-Basic-Concepts">1.1 Basic Concepts</h2>
+<h3 id="Log-Structured-Merge-Tree-LSM-tree">Log-Structured Merge Tree (LSM-tree)</h3>
+<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
+<ul>
+<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
+<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
+<li><strong>Merging</strong> old files in the background to keep them organized</li>
+</ul>
+<h4 id="Write-Ahead-Log-WAL">Write-Ahead Log (WAL)</h4>
+<p><strong>WAL (Write-Ahead Log)</strong> is a <strong>log file</strong> used to protect data.</p>
+<ul>
+<li>Before changing real data, <strong>write the change to the log</strong></li>
+<li>If the system crashes, you can <strong>replay the log to recover</strong></li>
+</ul>
+<h5 id="Reason">Reason</h5>
+<p>Imagine your database is like a <strong>notebook</strong>:</p>
+<ul>
+<li>If the computer <strong>crashes mid-write</strong>, you could <strong>lose or corrupt data</strong></li>
+</ul>
+<h5 id="How-WAL-Helps">How WAL Helps</h5>
+<ol>
+<li><strong>First write</strong> the change to the <strong>WAL</strong> (like a safety diary(disk))</li>
+<li><strong>Then apply</strong> the change to the real data (e.g. MemTable)</li>
+<li>If a crash happens, on restart you can <strong>replay the WAL</strong> to recover lost changes</li>
+</ol>
+<p>This ensures <strong>data durability and crash recovery</strong></p>
+<h4 id="LSM-Tree-Storage-Flow-with-WAL">LSM-Tree Storage Flow (with WAL)</h4>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">         (new write)</span><br><span class="line">              │</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |  Write-Ahead Log (WAL)  |  📝</span><br><span class="line">  |  - append-only on disk  |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │</span><br><span class="line">   (also write to RAM at same time)</span><br><span class="line">              │</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |        MemTable         |  ⚡</span><br><span class="line">  |  - in-memory (skip list)|</span><br><span class="line">  |  - sorted               |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │ (when full, flush)</span><br><span class="line">              ▼</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |   SSTable (Level 0)     |  💾</span><br><span class="line">  |  - on disk, immutable   |</span><br><span class="line">  |  - sorted inside        |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">  +---------------------------------+</span><br><span class="line">  |       Compaction process        |  ⚙️</span><br><span class="line">  |  - merges overlapping SSTables  |</span><br><span class="line">  |  - produces bigger sorted files |</span><br><span class="line">  +---------------------------------+</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">+---------+       +---------+       +---------+</span><br><span class="line">|  L1     |  → → → |  L2     |  → → → |  L3...  |</span><br><span class="line">+---------+       +---------+       +---------+</span><br><span class="line">(on-disk, large, non-overlapping ranges)</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="How-Delete-Works-in-an-LSM-Tree">How Delete Works in an LSM-Tree</h4>
+<p><strong>Put a Tombstone</strong></p>
+<ul>
+<li>A <strong>delete</strong> writes a special <strong>tombstone record</strong> (<code>key = &lt;tombstone&gt;</code>)</li>
+<li>It <strong>does not remove</strong> old data immediately</li>
+</ul>
+<p><strong>Read Path</strong></p>
+<ol>
+<li><strong>Check MemTable first</strong></li>
+<li>If a <strong>tombstone is found</strong>, ignore all older values of that key</li>
+<li>Return <strong>“not found”</strong></li>
+</ol>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">┌──────────────────────┐</span><br><span class="line">│      MemTable        │</span><br><span class="line">│  apple <span class="operator">=</span> <span class="operator">&lt;</span>tombstone<span class="operator">&gt;</span> │   ← <span class="keyword">new</span> <span class="keyword">delete</span></span><br><span class="line">└──────────────────────┘</span><br><span class="line">           ▲</span><br><span class="line">           │</span><br><span class="line">┌──────────────────────┐</span><br><span class="line">│      SSTable_1       │</span><br><span class="line">│   apple <span class="operator">=</span> red        │   ← <span class="keyword">old</span> <span class="keyword">value</span></span><br><span class="line">└──────────────────────┘</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h3 id="B-Tree">B+ Tree</h3>
+<p>A <strong>B+ Tree</strong> is a <strong>balanced search tree</strong> that stores <strong>sorted data</strong> and works <strong>efficiently on disk</strong>.<br>
+It is widely used in databases (MySQL, PostgreSQL, SQLite) for <strong>fast searching and indexing</strong>.</p>
+<h4 id="How-It-Works">How It Works</h4>
+<ul>
+<li>Each node stores <strong>many keys and child pointers</strong> (not just 2 like a binary tree)</li>
+<li><strong>Internal nodes</strong>: store only keys to guide the search</li>
+<li><strong>Leaf nodes</strong>: store the actual key–value pairs</li>
+<li><strong>Leaf nodes are linked</strong> like a chain for fast range scans</li>
+<li>The tree stays <strong>balanced</strong> — all leaf nodes are at the same depth</li>
+</ul>
+<h4 id="Structure">Structure</h4>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                         [30 | 60]</span><br><span class="line">                     /               \</span><br><span class="line">         ┌───────────────┐     ┌───────────────┐</span><br><span class="line">         ▼                               ▼</span><br><span class="line">   [10 | 20]                        [40 | 50 | 55]             ← internal nodes</span><br><span class="line">     /    |    \                       /    |     \</span><br><span class="line"> ┌───┐ ┌───┐ ┌───┐             ┌───┐ ┌───┐ ┌───┐</span><br><span class="line">▼       ▼      ▼               ▼       ▼      ▼</span><br><span class="line">[5 8 9] [12 18 19] [22 27 28]   [35 38 39] [42 47 49] [53 58 59]  ← leaf nodes</span><br><span class="line">│         │         │             │          │           │</span><br><span class="line">└─────────┴─────────┴─────────────┴──────────┴───────────┘</span><br><span class="line">             (all leaf nodes linked left → right)</span><br></pre></td></tr></tbody></table></figure>
+<h5 id="Why-B-Tree-Is-Efficient-on-Disk">Why B+ Tree Is Efficient on Disk</h5>
+<h5 id="📦-Fewer-Disk-Reads-High-Fan-Out">📦 Fewer Disk Reads (High Fan-Out)</h5>
+<ul>
+<li>Each node stores <strong>many keys</strong> (hundreds)</li>
+<li>The tree becomes <strong>short and wide</strong></li>
+<li>Searching needs only a <strong>few node accesses</strong></li>
+<li>→ <strong>Fewer slow disk reads</strong></li>
+</ul>
+<h5 id="📏-Nodes-Match-Disk-Page-Size">📏 Nodes Match Disk Page Size</h5>
+<ul>
+<li>Each node is sized to <strong>fit exactly in one disk page</strong> (e.g. 4KB or 8KB)</li>
+<li>Database reads a <strong>whole node in one I/O</strong></li>
+<li>→ <strong>No wasted disk access</strong></li>
+</ul>
+<h5 id="📚-Sequential-Leaf-Nodes-for-Range-Scans">📚 Sequential Leaf Nodes for Range Scans</h5>
+<ul>
+<li><strong>All leaf nodes are linked</strong> like a chain</li>
+<li>Range queries (e.g. <code>BETWEEN 10 AND 100</code>) can scan leaves in order</li>
+<li>→ Causes <strong>sequential disk reads</strong>, which are <strong>much faster</strong> than random reads</li>
+</ul>
+<hr>
+<h3 id="B-Tree-vs-LSM-Tree-—-Overall-Comparison">B+ Tree vs LSM Tree — Overall Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>B+ Tree</th>
+<th>LSM Tree</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Main goal</strong></td>
+<td>Fast reads</td>
+<td>Fast writes</td>
+</tr>
+<tr>
+<td><strong>Data layout</strong></td>
+<td>One big balanced tree</td>
+<td>Many sorted SSTable files in levels</td>
+</tr>
+<tr>
+<td><strong>Where writes go</strong></td>
+<td>Directly update leaf pages on disk</td>
+<td>First to WAL + MemTable (RAM), then flushed</td>
+</tr>
+<tr>
+<td><strong>Write pattern</strong></td>
+<td>Random writes (in-place updates)</td>
+<td>Sequential writes (append-only + compaction)</td>
+</tr>
+<tr>
+<td><strong>Write speed</strong></td>
+<td>❌ Slower (many small random I/O)</td>
+<td>✅ Very fast (batched, sequential)</td>
+</tr>
+<tr>
+<td><strong>Read path</strong></td>
+<td>✅ One binary search path through tree</td>
+<td>❌ Must search memtable + many SSTs across levels</td>
+</tr>
+<tr>
+<td><strong>Read speed</strong></td>
+<td>✅ Very fast</td>
+<td>⚠️ Slower (more disk seeks, merging needed)</td>
+</tr>
+<tr>
+<td><strong>Range queries</strong></td>
+<td>✅ Very efficient (linked leaves)</td>
+<td>⚠️ Slower (must merge multiple files)</td>
+</tr>
+<tr>
+<td><strong>Compaction needed</strong></td>
+<td>❌ No</td>
+<td>✅ Yes (periodically merges old SSTs)</td>
+</tr>
+<tr>
+<td><strong>Space usage</strong></td>
+<td>⚠️ May get fragmented (page splits, deletes)</td>
+<td>✅ Compact (immutable files, merged)</td>
+</tr>
+<tr>
+<td><strong>Memory use</strong></td>
+<td>Lower (no memtable)</td>
+<td>Higher (memtable + bloom filters)</td>
+</tr>
+<tr>
+<td><strong>Typical use</strong></td>
+<td>OLTP SQL DBs (MySQL, PostgreSQL, SQLite)</td>
+<td>Key-value stores (RocksDB, LevelDB, Cassandra)</td>
+</tr>
+</tbody>
+</table>
+<hr>
 <h3 id="std-shared-ptr"><code>std::shared_ptr</code></h3>
 <h4 id="Overview">Overview</h4>
 <ul>
@@ -134,6 +350,7 @@ This provides:</p>
 </ul>
 <h4 id="Example-2">Example</h4>
 <figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Node</span> { weak_ptr&lt;Node&gt; other; };</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">auto</span> a = <span class="built_in">make_shared</span>&lt;Node&gt;(); <span class="comment">// A owners: 1</span></span><br><span class="line">    <span class="keyword">auto</span> b = <span class="built_in">make_shared</span>&lt;Node&gt;(); <span class="comment">// B owners: 1</span></span><br><span class="line"></span><br><span class="line">    a-&gt;other = b; <span class="comment">// weak watch of B (owners unchanged: B still 1)</span></span><br><span class="line">    b-&gt;other = a; <span class="comment">// weak watch of A (owners unchanged: A still 1)</span></span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">"A owners = "</span> &lt;&lt; a.<span class="built_in">use_count</span>() &lt;&lt; <span class="string">"\n"</span>; <span class="comment">// 1</span></span><br><span class="line">    cout &lt;&lt; <span class="string">"B owners = "</span> &lt;&lt; b.<span class="built_in">use_count</span>() &lt;&lt; <span class="string">"\n"</span>; <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// When a and b go out of scope, both counts drop to 0 → deleted.</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">a-&gt;next = b;  <span class="comment">// next is weak_ptr</span></span><br><span class="line"></span><br><span class="line">           <span class="built_in">b</span> (shared_ptr)          a-&gt;<span class="built_in">next</span> (weak_ptr)</span><br><span class="line">                │                         │</span><br><span class="line">                ▼                         ▼</span><br><span class="line">        ┌──────────────────────────────────────────┐</span><br><span class="line">        │            control block                 │</span><br><span class="line">        │  - Node address ────────────────┐        │</span><br><span class="line">        │  - <span class="function">strong <span class="title">count</span> <span class="params">(shared_ptrs)</span>   │        |</span></span><br><span class="line"><span class="function">        │  - weak <span class="title">count</span> <span class="params">(weak_ptrs)</span>       │        │</span></span><br><span class="line"><span class="function">        └──────────────────────────────────────────┘</span></span><br><span class="line"><span class="function">                                 ▼</span></span><br><span class="line"><span class="function">                           Node object</span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></tbody></table></figure>
 <h4 id="Accessing-Through-weak-ptr">Accessing Through <code>weak_ptr</code></h4>
 <figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">auto</span> p = a-&gt;other.<span class="built_in">lock</span>()) {</span><br><span class="line">    <span class="comment">// p is a shared_ptr&lt;Node&gt;; object still alive</span></span><br><span class="line">} <span class="keyword">else</span> {</span><br><span class="line">    <span class="comment">// expired: the object was deleted</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 <h4 id="Summary">Summary</h4>
@@ -342,7 +559,7 @@ Allow the skip list to work like a <strong>multi-level linked list</strong> and 
 <span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mi>e</mi><mi>y</mi><mo>≡</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">key \equiv x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.03588em;">ey</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≡</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span></span>
 <hr>
 <h3 id="SkipList-Iterator">SkipList Iterator</h3>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SkipListIterator</span> : <span class="keyword">public</span> BaseIterator { <span class="comment">// it defines a class called SkipListIterator that inherits publicly from a base class called BaseIterator</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// --- private</span></span><br><span class="line"><span class="comment">// Many other readers are allowed at the same time</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Any writer must wait until all readers finish </span></span><br><span class="line"><span class="comment">// ---</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// Pointer to the current skip list node</span></span><br><span class="line">  std::shared_ptr&lt;SkipListNode&gt; current;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Shared read lock (may be adjusted later for concurrency control)</span></span><br><span class="line">  std::shared_ptr&lt;std::shared_lock&lt;std::shared_mutex&gt;&gt; lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// Constructor: initialize iterator with a starting node</span></span><br><span class="line">  <span class="built_in">SkipListIterator</span>(std::shared_ptr&lt;SkipListNode&gt; node);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Pre-increment: move to the next node and return reference</span></span><br><span class="line">  BaseIterator &amp;<span class="keyword">operator</span>++() <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Equality check: true if both iterators point to the same node</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>==(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Inequality check: true if iterators point to different nodes</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>!=(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Dereference operator: return key-value pair of the current node</span></span><br><span class="line">  value_type <span class="keyword">operator</span>*() <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Identify this iterator as SkipList type</span></span><br><span class="line">  <span class="function">IteratorType <span class="title">get_type</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator is valid (not null and usable)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_valid</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator has reached the end (nullptr)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_end</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the transaction ID associated with the current node</span></span><br><span class="line">  <span class="function"><span class="type">uint64_t</span> <span class="title">get_tranc_id</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the key of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_key</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the value of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_value</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">};</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SkipListIterator</span> : <span class="keyword">public</span> BaseIterator { <span class="comment">// it defines a class called SkipListIterator that inherits publicly from a base class called BaseIterator</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// --- private</span></span><br><span class="line"><span class="comment">// Many other readers are allowed at the same time</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Any writer must wait until all readers finish</span></span><br><span class="line"><span class="comment">// ---</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="comment">// Pointer to the current skip list node</span></span><br><span class="line">  std::shared_ptr&lt;SkipListNode&gt; current;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Shared read lock (may be adjusted later for concurrency control)</span></span><br><span class="line">  std::shared_ptr&lt;std::shared_lock&lt;std::shared_mutex&gt;&gt; lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">// Constructor: initialize iterator with a starting node</span></span><br><span class="line">  <span class="built_in">SkipListIterator</span>(std::shared_ptr&lt;SkipListNode&gt; node);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Pre-increment: move to the next node and return reference</span></span><br><span class="line">  BaseIterator &amp;<span class="keyword">operator</span>++() <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Equality check: true if both iterators point to the same node</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>==(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Inequality check: true if iterators point to different nodes</span></span><br><span class="line">  <span class="type">bool</span> <span class="keyword">operator</span>!=(<span class="type">const</span> BaseIterator &amp;other) <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Dereference operator: return key-value pair of the current node</span></span><br><span class="line">  value_type <span class="keyword">operator</span>*() <span class="type">const</span> <span class="keyword">override</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Identify this iterator as SkipList type</span></span><br><span class="line">  <span class="function">IteratorType <span class="title">get_type</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator is valid (not null and usable)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_valid</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check if iterator has reached the end (nullptr)</span></span><br><span class="line">  <span class="function"><span class="type">bool</span> <span class="title">is_end</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the transaction ID associated with the current node</span></span><br><span class="line">  <span class="function"><span class="type">uint64_t</span> <span class="title">get_tranc_id</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the key of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_key</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Get the value of the current node</span></span><br><span class="line">  <span class="function">std::string <span class="title">get_value</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">};</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
 <h4 id="Code-Explain">Code Explain</h4>
 <p><strong>How the <code>:</code> works in a constructor</strong></p>
 <figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">SkipListIterator::<span class="built_in">SkipListIterator</span>(std::shared_ptr&lt;SkipListNode&gt; node)</span><br><span class="line">    : <span class="built_in">current</span>(node) {}</span><br></pre></td></tr></tbody></table></figure>
@@ -506,70 +723,6 @@ Flip to match logical NOT:</p>
       <tags>
         <tag>C</tag>
         <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
-    <url>/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</url>
-    <content><![CDATA[<p>Do you want to start your own blog for free?<br>
-In this tutorial, I’ll show you how to build a blog <strong>from scratch</strong> using <a href="https://hexo.io/">Hexo</a> (a fast, Node.js-based blogging framework) and deploy it to <strong>GitHub Pages</strong> for free hosting.</p>
-<hr>
-<h2 id="Step-0-Install-Node-js">Step 0: Install Node.js</h2>
-<p>Check if Node.js and npm are installed:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
-<p>If missing (or you want a specific version), install via NodeSource. Example for Node 22:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://deb.nodesource.com/setup_22.x | <span class="built_in">sudo</span> -E bash -</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs</span><br></pre></td></tr></tbody></table></figure>
-<p>Verify installation:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-1-Install-Hexo-Create-Your-Blog">Step 1: Install Hexo &amp; Create Your Blog</h2>
-<p>Install Hexo CLI globally:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g hexo-cli</span><br></pre></td></tr></tbody></table></figure>
-<p>Create a new blog project:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></tbody></table></figure>
-<p>Or use the current folder:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init .</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-2-Write-Your-First-Blog-Post">Step 2: Write Your First Blog Post</h2>
-<p>Create a new post:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo new post <span class="string">"Hello World"</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Edit the generated file <code>source/_posts/hello-world.md</code>:</p>
-<figure class="highlight markdown"><table><tbody><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2025-08-26 22:00:00</span><br><span class="line"><span class="section">tags: [Intro]</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"></span><br><span class="line">Welcome to my first Hexo blog post!   </span><br><span class="line">This is written in <span class="strong">**Markdown**</span>.</span><br></pre></td></tr></tbody></table></figure>
-<p>Preview locally:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
-<p>Visit: <a href="http://localhost:4000">http://localhost:4000</a></p>
-<hr>
-<h2 id="Step-3-Install-a-Theme">Step 3: Install a Theme</h2>
-<p>Install the <strong>Next</strong> theme:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></tbody></table></figure>
-<p>Edit <code>_config.yml</code>:</p>
-<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Restart:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-4-Deploy-to-GitHub-Pages">Step 4: Deploy to GitHub Pages</h2>
-<p>Create a repo on GitHub (e.g. <code>my-blog</code>).<br>
-If your username is <code>yourname</code>:</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">https://yourname.github.io/my-blog/</span><br></pre></td></tr></tbody></table></figure>
-<p>Install deployer:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></tbody></table></figure>
-<p>Edit <code>_config.yml</code>:</p>
-<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/yourname/my-blog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">gh-pages</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Deploy:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-5-Extra-Tweaks">Step 5: Extra Tweaks</h2>
-<p>Apple-style fonts:</p>
-<figure class="highlight css"><table><tbody><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> {</span><br><span class="line">  <span class="attribute">font-family</span>: -apple-system, BlinkMacSystemFont, <span class="string">"Helvetica Neue"</span>, Arial, sans-serif;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<p>Custom domain: create <code>source/CNAME</code> with your domain name.</p>
-<p>SEO &amp; Analytics: configure in theme <code>_config.yml</code>.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>Guides</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -848,6 +1001,92 @@ dp[j] = \max \bigl(dp[j], \; v_i + dp[j - w_i] \bigr)
       </categories>
       <tags>
         <tag>DataStructure Algorithms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tree</title>
+    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
+    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
+<h2 id="Definition-Easy">Definition (Easy)</h2>
+<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
+<ul>
+<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
+<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
+<li><strong>Merging</strong> old files in the background to keep them organized</li>
+</ul>
+<h2 id="Function">Function</h2>
+<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
+]]></content>
+      <categories>
+        <category>DataStructure-Algorithms</category>
+      </categories>
+      <tags>
+        <tag>DataStructure Algorithms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
+    <url>/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</url>
+    <content><![CDATA[<p>Do you want to start your own blog for free?<br>
+In this tutorial, I’ll show you how to build a blog <strong>from scratch</strong> using <a href="https://hexo.io/">Hexo</a> (a fast, Node.js-based blogging framework) and deploy it to <strong>GitHub Pages</strong> for free hosting.</p>
+<hr>
+<h2 id="Step-0-Install-Node-js">Step 0: Install Node.js</h2>
+<p>Check if Node.js and npm are installed:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
+<p>If missing (or you want a specific version), install via NodeSource. Example for Node 22:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://deb.nodesource.com/setup_22.x | <span class="built_in">sudo</span> -E bash -</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs</span><br></pre></td></tr></tbody></table></figure>
+<p>Verify installation:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-1-Install-Hexo-Create-Your-Blog">Step 1: Install Hexo &amp; Create Your Blog</h2>
+<p>Install Hexo CLI globally:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g hexo-cli</span><br></pre></td></tr></tbody></table></figure>
+<p>Create a new blog project:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></tbody></table></figure>
+<p>Or use the current folder:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init .</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-2-Write-Your-First-Blog-Post">Step 2: Write Your First Blog Post</h2>
+<p>Create a new post:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo new post <span class="string">"Hello World"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Edit the generated file <code>source/_posts/hello-world.md</code>:</p>
+<figure class="highlight markdown"><table><tbody><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2025-08-26 22:00:00</span><br><span class="line"><span class="section">tags: [Intro]</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"></span><br><span class="line">Welcome to my first Hexo blog post!   </span><br><span class="line">This is written in <span class="strong">**Markdown**</span>.</span><br></pre></td></tr></tbody></table></figure>
+<p>Preview locally:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
+<p>Visit: <a href="http://localhost:4000">http://localhost:4000</a></p>
+<hr>
+<h2 id="Step-3-Install-a-Theme">Step 3: Install a Theme</h2>
+<p>Install the <strong>Next</strong> theme:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></tbody></table></figure>
+<p>Edit <code>_config.yml</code>:</p>
+<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Restart:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-4-Deploy-to-GitHub-Pages">Step 4: Deploy to GitHub Pages</h2>
+<p>Create a repo on GitHub (e.g. <code>my-blog</code>).<br>
+If your username is <code>yourname</code>:</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">https://yourname.github.io/my-blog/</span><br></pre></td></tr></tbody></table></figure>
+<p>Install deployer:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></tbody></table></figure>
+<p>Edit <code>_config.yml</code>:</p>
+<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/yourname/my-blog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">gh-pages</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Deploy:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-5-Extra-Tweaks">Step 5: Extra Tweaks</h2>
+<p>Apple-style fonts:</p>
+<figure class="highlight css"><table><tbody><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> {</span><br><span class="line">  <span class="attribute">font-family</span>: -apple-system, BlinkMacSystemFont, <span class="string">"Helvetica Neue"</span>, Arial, sans-serif;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>Custom domain: create <code>source/CNAME</code> with your domain name.</p>
+<p>SEO &amp; Analytics: configure in theme <code>_config.yml</code>.</p>
+<hr>
+]]></content>
+      <categories>
+        <category>Guides</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
       </tags>
   </entry>
 </search>
