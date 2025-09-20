@@ -1,74 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>C++ Note 1</title>
-    <url>/2025/09/16/C++/Note_1/</url>
-    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
-<h4 id="1">1</h4>
-<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
-<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>And inside consts.h you can write:</p>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
-<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
-<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
-<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
-<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
-For example:</p>
-<ul>
-<li>The <strong>global scope</strong> is outside all functions/classes.</li>
-<li>Each <strong>function</strong> has its own local scope.</li>
-<li>Each <strong>class</strong> has its own member scope.</li>
-<li>Each <strong>namespace</strong> has its own scope.</li>
-</ul>
-<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
-<table>
-<thead>
-<tr>
-<th>Part</th>
-<th>What it means</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
-<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td>The variable name for your lambda — you can call it like a normal function later</td>
-</tr>
-<tr>
-<td><code>&amp;</code> in <code>[&amp;]</code></td>
-<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
-</tr>
-<tr>
-<td><code>(ParamType p1, ParamType p2, ...)</code></td>
-<td>The <strong>parameter list</strong> with variable names</td>
-</tr>
-<tr>
-<td><code>-&gt; ReturnType</code></td>
-<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
-</tr>
-<tr>
-<td><code>{ ... }</code></td>
-<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
-</tr>
-</tbody>
-</table>
-<hr>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>Note</tag>
-        <tag>C++</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lec00 – Project Overview and Environment Setup</title>
     <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
     <content><![CDATA[<h1>0. Project Overview</h1>
@@ -632,6 +564,74 @@ Only one thread at a time can hold the mutex.</p>
       </tags>
   </entry>
   <entry>
+    <title>C++ Note 1</title>
+    <url>/2025/09/16/C++/Note_1/</url>
+    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
+<h4 id="1">1</h4>
+<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
+<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>And inside consts.h you can write:</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
+<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
+<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
+<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
+<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
+For example:</p>
+<ul>
+<li>The <strong>global scope</strong> is outside all functions/classes.</li>
+<li>Each <strong>function</strong> has its own local scope.</li>
+<li>Each <strong>class</strong> has its own member scope.</li>
+<li>Each <strong>namespace</strong> has its own scope.</li>
+</ul>
+<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
+<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>The variable name for your lambda — you can call it like a normal function later</td>
+</tr>
+<tr>
+<td><code>&amp;</code> in <code>[&amp;]</code></td>
+<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
+</tr>
+<tr>
+<td><code>(ParamType p1, ParamType p2, ...)</code></td>
+<td>The <strong>parameter list</strong> with variable names</td>
+</tr>
+<tr>
+<td><code>-&gt; ReturnType</code></td>
+<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
+</tr>
+<tr>
+<td><code>{ ... }</code></td>
+<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
+</tr>
+</tbody>
+</table>
+<hr>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS:APP 15213 Data Lab Guide</title>
     <url>/2025/08/28/CMU%2015-213/15-213%20data-lab/</url>
     <content><![CDATA[<h2 id="logicalNeg">logicalNeg</h2>
@@ -716,7 +716,29 @@ Flip to match logical NOT:</p>
 </ul>
 <h3 id="Final-implementation">Final implementation</h3>
 <figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span></span><br><span class="line">{</span><br><span class="line">  <span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="type">int</span> min_bits = <span class="number">0</span>;</span><br><span class="line">  <span class="type">int</span> tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Normalize: positives unchanged, negatives flipped</span></span><br><span class="line">  x = x ^ sign;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Find index of highest 1 via binary search on bit ranges</span></span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">8</span>)  &lt;&lt; <span class="number">3</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">4</span>)  &lt;&lt; <span class="number">2</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">2</span>)  &lt;&lt; <span class="number">1</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">1</span>);       min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Add the last bit (if x is 1 now)</span></span><br><span class="line">  min_bits += x;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Plus one sign bit to cover all cases</span></span><br><span class="line">  min_bits += <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> min_bits;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-]]></content>
+<hr>
+<h2 id="floatPower2">floatPower2</h2>
+<h3 id="32-bit-float-Bit-Layout-Diagram">32-bit float Bit Layout Diagram</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">┌───────┬────────────────────┬───────────────────────────────────────┐</span><br><span class="line">│ Sign  │      Exponent      |               Fraction                |</span><br><span class="line">│ (1bit)│      (8 bits)      |              (23 bits)                |</span><br><span class="line">├───────┼────────────────────┼───────────────────────────────────────┤</span><br><span class="line">│   0   │ 0 0 0 0 0 0 0 0    | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |</span><br><span class="line">└───────┴────────────────────┴───────────────────────────────────────┘</span><br><span class="line"> bit 31         bits 30–23                         bits 22–0</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p><strong>example</strong></p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">0 10000001 01100000000000000000000</span><br><span class="line">│ │        └─ mantissa (1.011...)</span><br><span class="line">│ └ exponent (129 = 2 after bias)</span><br><span class="line">└ sign</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Special Case: Denormal / Subnormal Numbers</strong></p>
+<p><strong>Condition:</strong></p>
+<ul>
+<li><code>exponent = 0</code></li>
+<li>and <code>fraction ≠ 0</code></li>
+</ul>
+<p><strong>Then:</strong></p>
+<ul>
+<li>There is <strong>no implicit leading <code>1</code></strong> before the fraction bits</li>
+<li>The exponent is treated as <code>1 - 127 = -126</code></li>
+</ul>
+<p><strong>Value Formula:</strong></p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mo>−</mo><mn>1</mn><msup><mo stretchy="false">)</mo><mtext>sign</mtext></msup><mo>×</mo><mn>0.</mn><mtext>fraction&nbsp;bits</mtext><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>126</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
+(-1)^{\text{sign}} \times 0.\text{fraction bits} \times 2^{-126}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1305em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8805em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">sign</span></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">0.</span><span class="mord text"><span class="mord">fraction&nbsp;bits</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8641em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">126</span></span></span></span></span></span></span></span></span></span></span></span></span>
+<h3 id="Code">Code</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Return the bit-level equivalent of 2.0^x as a float (single-precision)</span></span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="title">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> </span>{</span><br><span class="line">    <span class="comment">// Too small: smaller than the smallest denorm (2^-149)</span></span><br><span class="line">    <span class="keyword">if</span> (x &lt; <span class="number">-149</span>) <span class="keyword">return</span> <span class="number">0u</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Too large: larger than the largest finite power (2^127)</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt; <span class="number">127</span>) <span class="keyword">return</span> <span class="number">0x7f800000u</span>; <span class="comment">// +INF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Normalized range: -126 &lt;= x &lt;= 127</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt;= <span class="number">-126</span>) {</span><br><span class="line">        <span class="type">unsigned</span> exp = (<span class="type">unsigned</span>)(x + <span class="number">127</span>); <span class="comment">// bias = 127</span></span><br><span class="line">        <span class="keyword">return</span> exp &lt;&lt; <span class="number">23</span>;                   <span class="comment">// sign=0, frac=0</span></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Denormalized range: -149 &lt;= x &lt;= -127</span></span><br><span class="line">    <span class="comment">// value = frac * 2^-149  =&gt;  frac = 2^(x+149)</span></span><br><span class="line">    <span class="type">unsigned</span> frac = <span class="number">1u</span> &lt;&lt; (x + <span class="number">149</span>);</span><br><span class="line">    <span class="keyword">return</span> frac; <span class="comment">// sign=0, exp=0</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>]]></content>
       <categories>
         <category>CMU 15-213</category>
       </categories>
@@ -1087,6 +1109,60 @@ If your username is <code>yourname</code>:</p>
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C++ chapter</title>
+    <url>/2025/08/28/Interview/C++/</url>
+    <content><![CDATA[<h1>Common C++ Interview Questions</h1>
+<h2 id="C-Basics">C++ Basics</h2>
+<h3 id="Difference-Between-Pointers-and-References">Difference Between Pointers and References</h3>
+<p>A <strong>pointer</strong> stores the address of an object. It is itself a variable(a named object) and has its own address, so you can even have a pointer to a pointer.<br>
+A pointer can be changed – both the address it stores and the data at that address be modified.</p>
+<p>A <strong>reference</strong> is simply an alias for a variable. Once bound, it cannot be changed to refer to another object, and it must be initialized when declared.</p>
+<p>There is no such things as a “null reference”, but there can be a pointer to a null value.</p>
+<p><strong>1. Definition and Declaration:</strong></p>
+<p>A pointer is a variable whose value is the address of another variable.<br>
+When declaring a pointer, the <code>*</code> is used.</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> x = <span class="number">10</span>;</span><br><span class="line">*ptr = &amp;x;</span><br></pre></td></tr></tbody></table></figure>
+<p>A reference is an alias, created for an already existing variable. When declaring a reference, the <code>&amp;</code> is used.</p>
+<p><strong>2. Usage and Operations:</strong></p>
+<ul>
+<li><strong>Pointer:</strong> By using the dereference operator <code>*</code>, you can access the value of the variable the pointer pointes to. You can also use the address-of operator <code>&amp;</code> to obtain the address of a variable.</li>
+</ul>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> value = *ptr; <span class="comment">// get the value of the variable the the pointer points to</span></span><br><span class="line"><span class="type">int</span> address = &amp;x; <span class="comment">// obtain the address of variable x</span></span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li><strong>Reference:</strong> A reference must be initialized when declared, and throughout its entire lifetime, it always refers to the same variable. You don’t need to use the dereference operator, because a reference itself is just another name for the variable.</li>
+</ul>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> newValue = ref; <span class="comment">// get the reference value</span></span><br></pre></td></tr></tbody></table></figure>
+<p><strong>3. Null Pointers and Null References:</strong></p>
+<p>A pointer can be null(<code>nullptr</code>), meaning it does not point to any valid address.</p>
+<p>A reference must be initialized at the time of declaration, and it cannot be changed to refer to a different object. Therefore, there is no concept of a null reference.</p>
+<p><strong>4. Mutability:</strong></p>
+<ul>
+<li>
+<p><strong>Pointer:</strong> A pointer can change what it points to, allowing it to refer to different memory addresses.</p>
+</li>
+<li>
+<p><strong>Reference:</strong> Once a reference is initialized, it always refers to the same object and cannot be rebound.</p>
+</li>
+</ul>
+<p><strong>5. Usage:</strong></p>
+<ul>
+<li>
+<p><strong>Pointer:</strong> Commonly used for dynamic memory allocation, array operations, and function parameter passing.</p>
+</li>
+<li>
+<p><strong>Reference:</strong> Commonly used for function parameter passing, operator overloading, and create aliases.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Interview</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>interview</tag>
       </tags>
   </entry>
 </search>
