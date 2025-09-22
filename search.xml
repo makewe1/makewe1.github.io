@@ -1,73 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Lec00 – Project Overview and Environment Setup</title>
-    <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
-    <content><![CDATA[<h1>0. Project Overview</h1>
-<h2 id="0-1-Project-Content">0.1 Project Content</h2>
-<p>This project is a <strong>Key-Value (KV) storage engine</strong> built on the <strong>Log-Structured Merge-Tree (LSM Tree)</strong> architecture.<br>
-It is about:</p>
-<ol>
-<li>The fundamental principles of KV storage engines</li>
-<li>Core concepts of LSM Tree, a widely used storage architecture</li>
-<li>Common practices in modern C++ programming</li>
-</ol>
-<h1>1. Operating System and Compiler Environment</h1>
-<p>The project is developed using <strong>modern C++ (up to C++17 standard)</strong>.<br>
-Any compiler that supports <strong>C++20 or later</strong> (such as <code>g++</code> or <code>clang++</code>) is fully compatible for building the system.</p>
-<p>The development environment is based on <strong>Kali Linux</strong> running on WSL2. Since Kali and Ubuntu are both Debian-based distributions using the <code>apt</code> package manager, the installation instructions provided are directly applicable to Ubuntu or Debian systems as well.</p>
-<h2 id="1-1-Compiler-Installation">1.1 Compiler Installation</h2>
-<p>The project requires a modern C++ compiler. On Debian-based systems such as Ubuntu or Kali Linux, both GCC and G++ can be installed with the following commands:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y gcc</span><br><span class="line"><span class="built_in">sudo</span> apt install -y g++</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="1-2-Language-Server">1.2 Language Server</h2>
-<p>To enhance the development experience, this project adopts <strong>clangd</strong> as the language server.<br>
-Clangd is a lightweight C/C++ language server that integrates seamlessly with modern editors such as VS Code. It provides:</p>
-<ul>
-<li>Intelligent code completion</li>
-<li>Go-to-definition and symbol navigation</li>
-<li>Real-time diagnostics and error highlighting</li>
-<li>Semantic syntax highlighting</li>
-</ul>
-<p>On Debian-based systems, clangd can be installed with:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y clangd</span><br></pre></td></tr></tbody></table></figure>
-<h1>2. Project Management Tools</h1>
-<h2 id="2-1-Xmake">2.1 Xmake</h2>
-<h3 id="2-1-1-Installation">2.1.1 Installation</h3>
-<p>This project uses <strong>Xmake</strong> as its primary project management tool.<br>
-Xmake can be viewed as a combination of <strong>Make + CMake + vcpkg</strong>, providing functionality for:</p>
-<ul>
-<li>Project building</li>
-<li>Dependency management</li>
-<li>Execution and packaging</li>
-</ul>
-<p>Xmake can be installed with the following command:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text | bash</span><br></pre></td></tr></tbody></table></figure>
-<p>For more details, refer to the official documentation:<a href="https://xmake.io/#/getting_started">Xmake – Getting Started</a></p>
-<h1>3. VS Code Configuration</h1>
-<h2 id="3-1-Code-Completion-and-Navigation">3.1 Code Completion and Navigation</h2>
-<p>This project uses <strong>clangd</strong> as the language server.<br>
-After installing clangd on your system, the next step is to enable it in VS Code.</p>
-<p>To do so, install the <strong>clangd extension</strong> from the VS Code marketplace.<br>
-This provides:</p>
-<ul>
-<li>Intelligent code completion</li>
-<li>Go-to-definition and symbol navigation</li>
-<li>Real-time diagnostics and error highlighting</li>
-</ul>
-<p><img src="clangd.png" alt="Xmake plugin in VS Code"></p>
-<h2 id="3-2-Integrating-Xmake">3.2 Integrating Xmake</h2>
-<p>In VSCode, the <strong>Xmake project management tool</strong> is supported. We can install the <strong>Xmake extension</strong>, which makes it more convenient to use Xmake for project management directly within VSCode.</p>
-<p><img src="xmake.png" alt="Xmake plugin in VS Code"></p>
-]]></content>
-      <categories>
-        <category>AstraKV</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Database</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lec01 – Introduction to LSM Trees and Skip List Implementation</title>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
@@ -99,6 +32,8 @@ This provides:</p>
 <p>This ensures <strong>data durability and crash recovery</strong></p>
 <h4 id="LSM-Tree-Storage-Flow-with-WAL">LSM-Tree Storage Flow (with WAL)</h4>
 <figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">         (new write)</span><br><span class="line">              │</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |  Write-Ahead Log (WAL)  |  📝</span><br><span class="line">  |  - append-only on disk  |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │</span><br><span class="line">   (also write to RAM at same time)</span><br><span class="line">              │</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |        MemTable         |  ⚡</span><br><span class="line">  |  - in-memory (skip list)|</span><br><span class="line">  |  - sorted               |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │ (when full, flush)</span><br><span class="line">              ▼</span><br><span class="line">  +-------------------------+</span><br><span class="line">  |   SSTable (Level 0)     |  💾</span><br><span class="line">  |  - on disk, immutable   |</span><br><span class="line">  |  - sorted inside        |</span><br><span class="line">  +-------------------------+</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">  +---------------------------------+</span><br><span class="line">  |       Compaction process        |  ⚙️</span><br><span class="line">  |  - merges overlapping SSTables  |</span><br><span class="line">  |  - produces bigger sorted files |</span><br><span class="line">  +---------------------------------+</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">+---------+       +---------+       +---------+</span><br><span class="line">|  L1     |  → → → |  L2     |  → → → |  L3...  |</span><br><span class="line">+---------+       +---------+       +---------+</span><br><span class="line">(on-disk, large, non-overlapping ranges)</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>step by step process</strong></p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Step 1: New writes go into WAL + MemTable</span><br><span class="line">----------------------------------------</span><br><span class="line">Client writes:</span><br><span class="line">   put("a", 1)</span><br><span class="line">   put("b", 2)</span><br><span class="line">   put("c", 3)</span><br><span class="line"></span><br><span class="line">WAL (disk):             MemTable (in memory, skip list):</span><br><span class="line"> [a,1], [b,2], [c,3]     a→1, b→2, c→3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Step 2: MemTable flush → SSTable in L0</span><br><span class="line">--------------------------------------</span><br><span class="line">When MemTable is full, it’s flushed to disk as SSTable_1:</span><br><span class="line"></span><br><span class="line">Level 0 (L0):</span><br><span class="line"> ┌───────────────┐</span><br><span class="line"> │ SSTable_1     │  --&gt; sorted: [a,1], [b,2], [c,3]</span><br><span class="line"> └───────────────┘</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Step 3: More writes come in</span><br><span class="line">----------------------------</span><br><span class="line">Client writes:</span><br><span class="line">   put("b", 20)   # update b</span><br><span class="line">   put("d", 4)</span><br><span class="line"></span><br><span class="line">WAL: append [b,20], [d,4]</span><br><span class="line">MemTable: b→20, d→4</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Step 4: Flush new MemTable → another L0 SSTable</span><br><span class="line">------------------------------------------------</span><br><span class="line">Level 0 (L0):</span><br><span class="line"> ┌───────────────┐</span><br><span class="line"> │ SSTable_1     │  --&gt; [a,1], [b,2], [c,3]</span><br><span class="line"> ├───────────────┤</span><br><span class="line"> │ SSTable_2     │  --&gt; [b,20], [d,4]</span><br><span class="line"> └───────────────┘</span><br><span class="line"></span><br><span class="line">⚠ Keys overlap (both tables contain "b").</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Step 5: Compaction L0 → L1</span><br><span class="line">---------------------------</span><br><span class="line">Pick overlapping SSTables (SSTable_1 + SSTable_2), merge-sort:</span><br><span class="line"></span><br><span class="line">Merged sequence:</span><br><span class="line">   [a,1], [b,2], [c,3], [b,20], [d,4]</span><br><span class="line"></span><br><span class="line">Keep latest values:</span><br><span class="line">   a→1, b→20, c→3, d→4</span><br><span class="line"></span><br><span class="line">Result → New SSTable in L1:</span><br><span class="line">Level 1 (L1):</span><br><span class="line"> ┌───────────────┐</span><br><span class="line"> │ SSTable_merged│  --&gt; [a,1], [b,20], [c,3], [d,4]</span><br><span class="line"> └───────────────┘</span><br><span class="line"></span><br><span class="line">Old SSTable_1 and SSTable_2 are deleted after compaction.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Step 6: Reads after compaction</span><br><span class="line">-------------------------------</span><br><span class="line">- get("b") → finds only "b→20" (newest value).</span><br><span class="line">- Old value "b→2" is discarded permanently.</span><br></pre></td></tr></tbody></table></figure>
 <h4 id="How-Delete-Works-in-an-LSM-Tree">How Delete Works in an LSM-Tree</h4>
 <p><strong>Put a Tombstone</strong></p>
 <ul>
@@ -564,6 +499,73 @@ Only one thread at a time can hold the mutex.</p>
       </tags>
   </entry>
   <entry>
+    <title>Lec00 – Project Overview and Environment Setup</title>
+    <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
+    <content><![CDATA[<h1>0. Project Overview</h1>
+<h2 id="0-1-Project-Content">0.1 Project Content</h2>
+<p>This project is a <strong>Key-Value (KV) storage engine</strong> built on the <strong>Log-Structured Merge-Tree (LSM Tree)</strong> architecture.<br>
+It is about:</p>
+<ol>
+<li>The fundamental principles of KV storage engines</li>
+<li>Core concepts of LSM Tree, a widely used storage architecture</li>
+<li>Common practices in modern C++ programming</li>
+</ol>
+<h1>1. Operating System and Compiler Environment</h1>
+<p>The project is developed using <strong>modern C++ (up to C++17 standard)</strong>.<br>
+Any compiler that supports <strong>C++20 or later</strong> (such as <code>g++</code> or <code>clang++</code>) is fully compatible for building the system.</p>
+<p>The development environment is based on <strong>Kali Linux</strong> running on WSL2. Since Kali and Ubuntu are both Debian-based distributions using the <code>apt</code> package manager, the installation instructions provided are directly applicable to Ubuntu or Debian systems as well.</p>
+<h2 id="1-1-Compiler-Installation">1.1 Compiler Installation</h2>
+<p>The project requires a modern C++ compiler. On Debian-based systems such as Ubuntu or Kali Linux, both GCC and G++ can be installed with the following commands:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y gcc</span><br><span class="line"><span class="built_in">sudo</span> apt install -y g++</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="1-2-Language-Server">1.2 Language Server</h2>
+<p>To enhance the development experience, this project adopts <strong>clangd</strong> as the language server.<br>
+Clangd is a lightweight C/C++ language server that integrates seamlessly with modern editors such as VS Code. It provides:</p>
+<ul>
+<li>Intelligent code completion</li>
+<li>Go-to-definition and symbol navigation</li>
+<li>Real-time diagnostics and error highlighting</li>
+<li>Semantic syntax highlighting</li>
+</ul>
+<p>On Debian-based systems, clangd can be installed with:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y clangd</span><br></pre></td></tr></tbody></table></figure>
+<h1>2. Project Management Tools</h1>
+<h2 id="2-1-Xmake">2.1 Xmake</h2>
+<h3 id="2-1-1-Installation">2.1.1 Installation</h3>
+<p>This project uses <strong>Xmake</strong> as its primary project management tool.<br>
+Xmake can be viewed as a combination of <strong>Make + CMake + vcpkg</strong>, providing functionality for:</p>
+<ul>
+<li>Project building</li>
+<li>Dependency management</li>
+<li>Execution and packaging</li>
+</ul>
+<p>Xmake can be installed with the following command:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text | bash</span><br></pre></td></tr></tbody></table></figure>
+<p>For more details, refer to the official documentation:<a href="https://xmake.io/#/getting_started">Xmake – Getting Started</a></p>
+<h1>3. VS Code Configuration</h1>
+<h2 id="3-1-Code-Completion-and-Navigation">3.1 Code Completion and Navigation</h2>
+<p>This project uses <strong>clangd</strong> as the language server.<br>
+After installing clangd on your system, the next step is to enable it in VS Code.</p>
+<p>To do so, install the <strong>clangd extension</strong> from the VS Code marketplace.<br>
+This provides:</p>
+<ul>
+<li>Intelligent code completion</li>
+<li>Go-to-definition and symbol navigation</li>
+<li>Real-time diagnostics and error highlighting</li>
+</ul>
+<p><img src="clangd.png" alt="Xmake plugin in VS Code"></p>
+<h2 id="3-2-Integrating-Xmake">3.2 Integrating Xmake</h2>
+<p>In VSCode, the <strong>Xmake project management tool</strong> is supported. We can install the <strong>Xmake extension</strong>, which makes it more convenient to use Xmake for project management directly within VSCode.</p>
+<p><img src="xmake.png" alt="Xmake plugin in VS Code"></p>
+]]></content>
+      <categories>
+        <category>AstraKV</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Database</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C++ Note 1</title>
     <url>/2025/09/16/C++/Note_1/</url>
     <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
@@ -629,122 +631,6 @@ For example:</p>
       <tags>
         <tag>C++</tag>
         <tag>Note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS:APP 15213 Data Lab Guide</title>
-    <url>/2025/08/28/CMU%2015-213/15-213%20data-lab/</url>
-    <content><![CDATA[<h2 id="logicalNeg">logicalNeg</h2>
-<h3 id="Step-1-—-Define-the-goal">Step 1 — Define the goal</h3>
-<p>We need a function that acts like logical <code>!x</code> without using the <code>!</code> operator:</p>
-<ul>
-<li>If <code>x == 0</code>, return <strong>1</strong></li>
-<li>If <code>x != 0</code>, return <strong>0</strong></li>
-</ul>
-<h3 id="Step-2-—-Find-the-unique-bit-feature-of-0">Step 2 — Find the unique bit feature of 0</h3>
-<p>We notice that for <code>x == 0</code>, both <code>x</code> and <code>-x</code> are <code>0</code>, so their sign bit is <code>0</code>.<br>
-For any <code>x != 0</code>, either <code>x</code> or <code>-x</code> is negative, so at least one sign bit is <code>1</code>.</p>
-<p>This means <code>(x | -x)</code> will have sign bit = <code>0</code> only when <code>x == 0</code>,<br>
-and sign bit = <code>1</code> for any <code>x != 0</code>.</p>
-<p>Since <code>-x</code> must be expressed using allowed operators,<br>
-we write it as <code>~x + 1</code> (two’s complement negation).</p>
-<h3 id="Step-3-—-Turn-the-sign-bit-into-0-1">Step 3 — Turn the sign bit into 0/1</h3>
-<p>We have two methods:</p>
-<h4 id="Method-1-—-Use-1-and-1">Method 1 — Use <code>&amp; 1</code> and <code>^ 1</code></h4>
-<p><code>(((~x + 1) | x) &gt;&gt; 31) &amp; 1</code> gives <strong>1</strong> when <code>x != 0</code>, <strong>0</strong> when <code>x == 0</code>.<br>
-Flip to match logical NOT:</p>
-<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">((((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) &amp; <span class="number">1</span>) ^ <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<h4 id="Method-2-—-Add-1-Cleaner-Way">Method 2 — Add 1 (Cleaner Way)</h4>
-<p>When we do an arithmetic right shift by 31 bits:</p>
-<ul>
-<li>For any nonzero <code>x</code>, <code>(((~x + 1) | x) &gt;&gt; 31)</code> gives <strong>-1</strong> (all bits = 1).</li>
-<li>For <code>x == 0</code>, the result is <strong>0</strong>.</li>
-</ul>
-<p>So if we simply add 1:</p>
-<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">(((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) + <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="howManyBits">howManyBits</h2>
-<p>The goal is to return the minimum number of bits required to represent an integer <code>x</code> in <strong>two’s complement</strong>.</p>
-<p>Examples:</p>
-<ul>
-<li><code>howManyBits(12) = 5</code></li>
-<li><code>howManyBits(298) = 10</code></li>
-<li><code>howManyBits(-5) = 4</code></li>
-<li><code>howManyBits(0) = 1</code></li>
-<li><code>howManyBits(-1) = 1</code></li>
-<li><code>howManyBits(0x80000000) = 32</code></li>
-</ul>
-<h3 id="Intuition">Intuition</h3>
-<p>Two’s complement numbers have <strong>runs of identical leading bits</strong>:</p>
-<ul>
-<li>Non-negative values start with leading <code>0</code>s.</li>
-<li>Negative values start with leading <code>1</code>s.</li>
-</ul>
-<p>To get the <em>minimal</em> width, we:</p>
-<ol>
-<li>Keep <strong>one sign bit</strong> (a single leading <code>0</code> or <code>1</code>), and</li>
-<li>Count up to the <strong>first bit that differs</strong> from the sign bit.</li>
-</ol>
-<p>So the problem reduces to: <strong>find the index of the most significant “meaningful” bit</strong>, then add 1 for the sign.</p>
-<h3 id="Normalizing-negative-and-positive-numbers">Normalizing negative and positive numbers</h3>
-<p>If we could make both cases look like “non-negative with leading zeros,” then the job is just “find the highest <code>1</code> bit.” We can!</p>
-<p>We get the sign:</p>
-<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>; <span class="comment">// 0x00000000 if x &gt;= 0, 0xFFFFFFFF if x &lt; 0</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Then:</p>
-<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">x ^ sign</span><br></pre></td></tr></tbody></table></figure>
-<p>acts like:</p>
-<ul>
-<li>If <code>x &gt;= 0</code>: <code>sign = 0</code>, so <code>x ^ 0 = x</code> (unchanged).</li>
-<li>If <code>x &lt; 0</code>:  <code>sign = -1</code> (all ones), so <code>x ^ (-1) = ~x</code> (bitwise NOT).</li>
-</ul>
-<p><strong>Effect:</strong> negatives get flipped to remove their leading 1s; positives stay as they are. After this, we can uniformly “search for the highest 1.”</p>
-<h3 id="Binary-search-on-bit-ranges">Binary search on bit ranges</h3>
-<p>We check chunks 16, 8, 4, 2, 1 bits to find where the top <code>1</code> lives. Each step says:</p>
-<ul>
-<li>“Is there any <code>1</code> in the upper half?”</li>
-<li>If yes, we advance the count and shift <code>x</code> down into that half.</li>
-<li>If not, we keep searching the lower half.</li>
-</ul>
-<p>We use <code>!!(expr)</code> to normalize to <code>0</code> or <code>1</code>, and then shift that <code>1</code> by a power-of-two to add <code>16</code>, <code>8</code>, <code>4</code>, <code>2</code>, or <code>1</code> to the answer without branches.</p>
-<h3 id="Always-add-one-sign-bit">Always add one sign bit</h3>
-<p>After counting the highest <code>1</code> bit, we always add <strong>one more bit</strong> for the sign.</p>
-<p>This covers all cases:</p>
-<ul>
-<li>For <code>x = 0</code>, no bits are set, so <code>min_bits = 0</code>, plus sign → <code>1</code> bit.</li>
-<li>For <code>x = -1</code>, all bits are <code>1</code>, but flipping gives <code>0</code>, so <code>min_bits = 0</code>, plus sign → <code>1</code> bit.</li>
-<li>For <code>x = 1</code>, highest bit = 0, so <code>min_bits = 1</code>, plus sign → <code>2</code> bits.</li>
-</ul>
-<h3 id="Final-implementation">Final implementation</h3>
-<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span></span><br><span class="line">{</span><br><span class="line">  <span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="type">int</span> min_bits = <span class="number">0</span>;</span><br><span class="line">  <span class="type">int</span> tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Normalize: positives unchanged, negatives flipped</span></span><br><span class="line">  x = x ^ sign;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Find index of highest 1 via binary search on bit ranges</span></span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">8</span>)  &lt;&lt; <span class="number">3</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">4</span>)  &lt;&lt; <span class="number">2</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">2</span>)  &lt;&lt; <span class="number">1</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">1</span>);       min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Add the last bit (if x is 1 now)</span></span><br><span class="line">  min_bits += x;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Plus one sign bit to cover all cases</span></span><br><span class="line">  min_bits += <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> min_bits;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="floatPower2">floatPower2</h2>
-<h3 id="32-bit-float-Bit-Layout-Diagram">32-bit float Bit Layout Diagram</h3>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">┌───────┬────────────────────┬───────────────────────────────────────┐</span><br><span class="line">│ Sign  │      Exponent      |               Fraction                |</span><br><span class="line">│ (1bit)│      (8 bits)      |              (23 bits)                |</span><br><span class="line">├───────┼────────────────────┼───────────────────────────────────────┤</span><br><span class="line">│   0   │ 0 0 0 0 0 0 0 0    | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |</span><br><span class="line">└───────┴────────────────────┴───────────────────────────────────────┘</span><br><span class="line"> bit 31         bits 30–23                         bits 22–0</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p><strong>example</strong></p>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">0 10000001 01100000000000000000000</span><br><span class="line">│ │        └─ mantissa (1.011...)</span><br><span class="line">│ └ exponent (129 = 2 after bias)</span><br><span class="line">└ sign</span><br></pre></td></tr></tbody></table></figure>
-<p><strong>Special Case: Denormal / Subnormal Numbers</strong></p>
-<p><strong>Condition:</strong></p>
-<ul>
-<li><code>exponent = 0</code></li>
-<li>and <code>fraction ≠ 0</code></li>
-</ul>
-<p><strong>Then:</strong></p>
-<ul>
-<li>There is <strong>no implicit leading <code>1</code></strong> before the fraction bits</li>
-<li>The exponent is treated as <code>1 - 127 = -126</code></li>
-</ul>
-<p><strong>Value Formula:</strong></p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mo>−</mo><mn>1</mn><msup><mo stretchy="false">)</mo><mtext>sign</mtext></msup><mo>×</mo><mn>0.</mn><mtext>fraction&nbsp;bits</mtext><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>126</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
-(-1)^{\text{sign}} \times 0.\text{fraction bits} \times 2^{-126}
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1305em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8805em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">sign</span></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">0.</span><span class="mord text"><span class="mord">fraction&nbsp;bits</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8641em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">126</span></span></span></span></span></span></span></span></span></span></span></span></span>
-<h3 id="Code">Code</h3>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Return the bit-level equivalent of 2.0^x as a float (single-precision)</span></span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="title">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> </span>{</span><br><span class="line">    <span class="comment">// Too small: smaller than the smallest denorm (2^-149)</span></span><br><span class="line">    <span class="keyword">if</span> (x &lt; <span class="number">-149</span>) <span class="keyword">return</span> <span class="number">0u</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Too large: larger than the largest finite power (2^127)</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt; <span class="number">127</span>) <span class="keyword">return</span> <span class="number">0x7f800000u</span>; <span class="comment">// +INF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Normalized range: -126 &lt;= x &lt;= 127</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt;= <span class="number">-126</span>) {</span><br><span class="line">        <span class="type">unsigned</span> exp = (<span class="type">unsigned</span>)(x + <span class="number">127</span>); <span class="comment">// bias = 127</span></span><br><span class="line">        <span class="keyword">return</span> exp &lt;&lt; <span class="number">23</span>;                   <span class="comment">// sign=0, frac=0</span></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Denormalized range: -149 &lt;= x &lt;= -127</span></span><br><span class="line">    <span class="comment">// value = frac * 2^-149  =&gt;  frac = 2^(x+149)</span></span><br><span class="line">    <span class="type">unsigned</span> frac = <span class="number">1u</span> &lt;&lt; (x + <span class="number">149</span>);</span><br><span class="line">    <span class="keyword">return</span> frac; <span class="comment">// sign=0, exp=0</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>]]></content>
-      <categories>
-        <category>CMU 15-213</category>
-      </categories>
-      <tags>
-        <tag>C</tag>
-        <tag>Computer Science</tag>
       </tags>
   </entry>
   <entry>
@@ -1109,6 +995,122 @@ If your username is <code>yourname</code>:</p>
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS:APP 15213 Data Lab Guide</title>
+    <url>/2025/08/28/CMU%2015-213/15-213%20data-lab/</url>
+    <content><![CDATA[<h2 id="logicalNeg">logicalNeg</h2>
+<h3 id="Step-1-—-Define-the-goal">Step 1 — Define the goal</h3>
+<p>We need a function that acts like logical <code>!x</code> without using the <code>!</code> operator:</p>
+<ul>
+<li>If <code>x == 0</code>, return <strong>1</strong></li>
+<li>If <code>x != 0</code>, return <strong>0</strong></li>
+</ul>
+<h3 id="Step-2-—-Find-the-unique-bit-feature-of-0">Step 2 — Find the unique bit feature of 0</h3>
+<p>We notice that for <code>x == 0</code>, both <code>x</code> and <code>-x</code> are <code>0</code>, so their sign bit is <code>0</code>.<br>
+For any <code>x != 0</code>, either <code>x</code> or <code>-x</code> is negative, so at least one sign bit is <code>1</code>.</p>
+<p>This means <code>(x | -x)</code> will have sign bit = <code>0</code> only when <code>x == 0</code>,<br>
+and sign bit = <code>1</code> for any <code>x != 0</code>.</p>
+<p>Since <code>-x</code> must be expressed using allowed operators,<br>
+we write it as <code>~x + 1</code> (two’s complement negation).</p>
+<h3 id="Step-3-—-Turn-the-sign-bit-into-0-1">Step 3 — Turn the sign bit into 0/1</h3>
+<p>We have two methods:</p>
+<h4 id="Method-1-—-Use-1-and-1">Method 1 — Use <code>&amp; 1</code> and <code>^ 1</code></h4>
+<p><code>(((~x + 1) | x) &gt;&gt; 31) &amp; 1</code> gives <strong>1</strong> when <code>x != 0</code>, <strong>0</strong> when <code>x == 0</code>.<br>
+Flip to match logical NOT:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">((((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) &amp; <span class="number">1</span>) ^ <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<h4 id="Method-2-—-Add-1-Cleaner-Way">Method 2 — Add 1 (Cleaner Way)</h4>
+<p>When we do an arithmetic right shift by 31 bits:</p>
+<ul>
+<li>For any nonzero <code>x</code>, <code>(((~x + 1) | x) &gt;&gt; 31)</code> gives <strong>-1</strong> (all bits = 1).</li>
+<li>For <code>x == 0</code>, the result is <strong>0</strong>.</li>
+</ul>
+<p>So if we simply add 1:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">(((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) + <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="howManyBits">howManyBits</h2>
+<p>The goal is to return the minimum number of bits required to represent an integer <code>x</code> in <strong>two’s complement</strong>.</p>
+<p>Examples:</p>
+<ul>
+<li><code>howManyBits(12) = 5</code></li>
+<li><code>howManyBits(298) = 10</code></li>
+<li><code>howManyBits(-5) = 4</code></li>
+<li><code>howManyBits(0) = 1</code></li>
+<li><code>howManyBits(-1) = 1</code></li>
+<li><code>howManyBits(0x80000000) = 32</code></li>
+</ul>
+<h3 id="Intuition">Intuition</h3>
+<p>Two’s complement numbers have <strong>runs of identical leading bits</strong>:</p>
+<ul>
+<li>Non-negative values start with leading <code>0</code>s.</li>
+<li>Negative values start with leading <code>1</code>s.</li>
+</ul>
+<p>To get the <em>minimal</em> width, we:</p>
+<ol>
+<li>Keep <strong>one sign bit</strong> (a single leading <code>0</code> or <code>1</code>), and</li>
+<li>Count up to the <strong>first bit that differs</strong> from the sign bit.</li>
+</ol>
+<p>So the problem reduces to: <strong>find the index of the most significant “meaningful” bit</strong>, then add 1 for the sign.</p>
+<h3 id="Normalizing-negative-and-positive-numbers">Normalizing negative and positive numbers</h3>
+<p>If we could make both cases look like “non-negative with leading zeros,” then the job is just “find the highest <code>1</code> bit.” We can!</p>
+<p>We get the sign:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>; <span class="comment">// 0x00000000 if x &gt;= 0, 0xFFFFFFFF if x &lt; 0</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Then:</p>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line">x ^ sign</span><br></pre></td></tr></tbody></table></figure>
+<p>acts like:</p>
+<ul>
+<li>If <code>x &gt;= 0</code>: <code>sign = 0</code>, so <code>x ^ 0 = x</code> (unchanged).</li>
+<li>If <code>x &lt; 0</code>:  <code>sign = -1</code> (all ones), so <code>x ^ (-1) = ~x</code> (bitwise NOT).</li>
+</ul>
+<p><strong>Effect:</strong> negatives get flipped to remove their leading 1s; positives stay as they are. After this, we can uniformly “search for the highest 1.”</p>
+<h3 id="Binary-search-on-bit-ranges">Binary search on bit ranges</h3>
+<p>We check chunks 16, 8, 4, 2, 1 bits to find where the top <code>1</code> lives. Each step says:</p>
+<ul>
+<li>“Is there any <code>1</code> in the upper half?”</li>
+<li>If yes, we advance the count and shift <code>x</code> down into that half.</li>
+<li>If not, we keep searching the lower half.</li>
+</ul>
+<p>We use <code>!!(expr)</code> to normalize to <code>0</code> or <code>1</code>, and then shift that <code>1</code> by a power-of-two to add <code>16</code>, <code>8</code>, <code>4</code>, <code>2</code>, or <code>1</code> to the answer without branches.</p>
+<h3 id="Always-add-one-sign-bit">Always add one sign bit</h3>
+<p>After counting the highest <code>1</code> bit, we always add <strong>one more bit</strong> for the sign.</p>
+<p>This covers all cases:</p>
+<ul>
+<li>For <code>x = 0</code>, no bits are set, so <code>min_bits = 0</code>, plus sign → <code>1</code> bit.</li>
+<li>For <code>x = -1</code>, all bits are <code>1</code>, but flipping gives <code>0</code>, so <code>min_bits = 0</code>, plus sign → <code>1</code> bit.</li>
+<li>For <code>x = 1</code>, highest bit = 0, so <code>min_bits = 1</code>, plus sign → <code>2</code> bits.</li>
+</ul>
+<h3 id="Final-implementation">Final implementation</h3>
+<figure class="highlight c"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span></span><br><span class="line">{</span><br><span class="line">  <span class="type">int</span> sign = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="type">int</span> min_bits = <span class="number">0</span>;</span><br><span class="line">  <span class="type">int</span> tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Normalize: positives unchanged, negatives flipped</span></span><br><span class="line">  x = x ^ sign;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Find index of highest 1 via binary search on bit ranges</span></span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">8</span>)  &lt;&lt; <span class="number">3</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">4</span>)  &lt;&lt; <span class="number">2</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">2</span>)  &lt;&lt; <span class="number">1</span>; min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line">  tmp = !!(x &gt;&gt; <span class="number">1</span>);       min_bits += tmp; x &gt;&gt;= tmp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Add the last bit (if x is 1 now)</span></span><br><span class="line">  min_bits += x;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Plus one sign bit to cover all cases</span></span><br><span class="line">  min_bits += <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> min_bits;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="floatPower2">floatPower2</h2>
+<h3 id="32-bit-float-Bit-Layout-Diagram">32-bit float Bit Layout Diagram</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">┌───────┬────────────────────┬───────────────────────────────────────┐</span><br><span class="line">│ Sign  │      Exponent      |               Fraction                |</span><br><span class="line">│ (1bit)│      (8 bits)      |              (23 bits)                |</span><br><span class="line">├───────┼────────────────────┼───────────────────────────────────────┤</span><br><span class="line">│   0   │ 0 0 0 0 0 0 0 0    | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |</span><br><span class="line">└───────┴────────────────────┴───────────────────────────────────────┘</span><br><span class="line"> bit 31         bits 30–23                         bits 22–0</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p><strong>example</strong></p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">0 10000001 01100000000000000000000</span><br><span class="line">│ │        └─ mantissa (1.011...)</span><br><span class="line">│ └ exponent (129 = 2 after bias)</span><br><span class="line">└ sign</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Special Case: Denormal / Subnormal Numbers</strong></p>
+<p><strong>Condition:</strong></p>
+<ul>
+<li><code>exponent = 0</code></li>
+<li>and <code>fraction ≠ 0</code></li>
+</ul>
+<p><strong>Then:</strong></p>
+<ul>
+<li>There is <strong>no implicit leading <code>1</code></strong> before the fraction bits</li>
+<li>The exponent is treated as <code>1 - 127 = -126</code></li>
+</ul>
+<p><strong>Value Formula:</strong></p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mo>−</mo><mn>1</mn><msup><mo stretchy="false">)</mo><mtext>sign</mtext></msup><mo>×</mo><mn>0.</mn><mtext>fraction&nbsp;bits</mtext><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><mn>126</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
+(-1)^{\text{sign}} \times 0.\text{fraction bits} \times 2^{-126}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1305em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8805em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">sign</span></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">0.</span><span class="mord text"><span class="mord">fraction&nbsp;bits</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8641em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">126</span></span></span></span></span></span></span></span></span></span></span></span></span>
+<h3 id="Code">Code</h3>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="comment">// Return the bit-level equivalent of 2.0^x as a float (single-precision)</span></span><br><span class="line"><span class="function"><span class="type">unsigned</span> <span class="title">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> </span>{</span><br><span class="line">    <span class="comment">// Too small: smaller than the smallest denorm (2^-149)</span></span><br><span class="line">    <span class="keyword">if</span> (x &lt; <span class="number">-149</span>) <span class="keyword">return</span> <span class="number">0u</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Too large: larger than the largest finite power (2^127)</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt; <span class="number">127</span>) <span class="keyword">return</span> <span class="number">0x7f800000u</span>; <span class="comment">// +INF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Normalized range: -126 &lt;= x &lt;= 127</span></span><br><span class="line">    <span class="keyword">if</span> (x &gt;= <span class="number">-126</span>) {</span><br><span class="line">        <span class="type">unsigned</span> exp = (<span class="type">unsigned</span>)(x + <span class="number">127</span>); <span class="comment">// bias = 127</span></span><br><span class="line">        <span class="keyword">return</span> exp &lt;&lt; <span class="number">23</span>;                   <span class="comment">// sign=0, frac=0</span></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Denormalized range: -149 &lt;= x &lt;= -127</span></span><br><span class="line">    <span class="comment">// value = frac * 2^-149  =&gt;  frac = 2^(x+149)</span></span><br><span class="line">    <span class="type">unsigned</span> frac = <span class="number">1u</span> &lt;&lt; (x + <span class="number">149</span>);</span><br><span class="line">    <span class="keyword">return</span> frac; <span class="comment">// sign=0, exp=0</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>]]></content>
+      <categories>
+        <category>CMU 15-213</category>
+      </categories>
+      <tags>
+        <tag>C</tag>
+        <tag>Computer Science</tag>
       </tags>
   </entry>
   <entry>
