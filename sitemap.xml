@@ -56,7 +56,7 @@
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/</loc>
+    <loc>https://makewe1.github.io/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</loc>
     
     <lastmod>2025-09-16</lastmod>
     
@@ -65,7 +65,7 @@
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</loc>
+    <loc>https://makewe1.github.io/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/</loc>
     
     <lastmod>2025-09-16</lastmod>
     
@@ -142,6 +142,13 @@
   </url>
   
   <url>
+    <loc>https://makewe1.github.io/tags/Note/</loc>
+    <lastmod>2025-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://makewe1.github.io/tags/C/</loc>
     <lastmod>2025-09-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -150,13 +157,6 @@
   
   <url>
     <loc>https://makewe1.github.io/tags/Computer-Science/</loc>
-    <lastmod>2025-09-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://makewe1.github.io/tags/Note/</loc>
     <lastmod>2025-09-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -193,14 +193,14 @@
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/categories/CMU-15-213/</loc>
+    <loc>https://makewe1.github.io/categories/C/</loc>
     <lastmod>2025-09-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://makewe1.github.io/categories/C/</loc>
+    <loc>https://makewe1.github.io/categories/CMU-15-213/</loc>
     <lastmod>2025-09-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
