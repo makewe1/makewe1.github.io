@@ -68,6 +68,58 @@ This provides:</p>
       </tags>
   </entry>
   <entry>
+    <title>Lec02 – MemTable</title>
+    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
+    <content><![CDATA[<h1>1 MemTable Implementation</h1>
+<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Explanation">Explanation</h3>
+<p><strong>Active SkipList</strong></p>
+<ul>
+<li>
+<p>The in-memory structure currently accepting writes.</p>
+</li>
+<li>
+<p>All new inserts/updates go here.</p>
+</li>
+<li>
+<p>Reads first check this list.</p>
+</li>
+</ul>
+<p><strong>Frozen SkipLists</strong></p>
+<ul>
+<li>
+<p>When the active SkipList fills up, it is frozen (read-only).</p>
+</li>
+<li>
+<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
+</li>
+<li>
+<p>Reads must also check these until they are flushed.</p>
+</li>
+</ul>
+<p><strong>Client flow</strong></p>
+<ul>
+<li>
+<p>r1 (Write) → client writes into the active skip list.</p>
+</li>
+<li>
+<p>r1 (Read) → reads first check active skip list.</p>
+</li>
+<li>
+<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>AstraKV</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Database</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Lec01 – Introduction to LSM Trees and Skip List Implementation</title>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
@@ -555,58 +607,6 @@ Only one thread at a time can hold the mutex.</p>
 <ul>
 <li><strong>Allow multiple threads to read at the same time</strong></li>
 <li>While <strong>blocking any writers until all readers are done</strong></li>
-</ul>
-]]></content>
-      <categories>
-        <category>AstraKV</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Database</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Lec00 – MemTable</title>
-    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
-    <content><![CDATA[<h1>1 MemTable Implementation</h1>
-<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Explanation">Explanation</h3>
-<p><strong>Active SkipList</strong></p>
-<ul>
-<li>
-<p>The in-memory structure currently accepting writes.</p>
-</li>
-<li>
-<p>All new inserts/updates go here.</p>
-</li>
-<li>
-<p>Reads first check this list.</p>
-</li>
-</ul>
-<p><strong>Frozen SkipLists</strong></p>
-<ul>
-<li>
-<p>When the active SkipList fills up, it is frozen (read-only).</p>
-</li>
-<li>
-<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
-</li>
-<li>
-<p>Reads must also check these until they are flushed.</p>
-</li>
-</ul>
-<p><strong>Client flow</strong></p>
-<ul>
-<li>
-<p>r1 (Write) → client writes into the active skip list.</p>
-</li>
-<li>
-<p>r1 (Read) → reads first check active skip list.</p>
-</li>
-<li>
-<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
-</li>
 </ul>
 ]]></content>
       <categories>
@@ -1238,6 +1238,44 @@ When declaring a pointer, the <code>*</code> is used.</p>
 <li><code>long long</code>: at least 64 bits, and at least as long as <code>long</code></li>
 </ul>
 <p>1 bytes is at least 8 bits. On modern system, a byte is always 8 bits.</p>
+<h3 id="Keyword">Keyword</h3>
+<h4 id="const-Keyword"><code>const</code> Keyword</h4>
+<p><strong>Purpose of <code>const</code></strong><br>
+A variable or object qualified with <code>const</code> cannot be modified; it becomes read-only.<br>
+A <code>const</code> variable must be initialized at the point of definition.</p>
+<h5 id="1-Constant-Pointer-a-k-a-“pointer-to-const”">1. Constant Pointer (a.k.a. “pointer to const”)</h5>
+<p>A <em>constant pointer</em> means the pointer points to an object that cannot be modified through that pointer.<br>
+In other words, the pointer enforces immutable on the object it refers to.</p>
+<p><strong>Key property</strong></p>
+<ul>
+<li>The pointer itself can still be reassigned to point to another object.</li>
+<li>What is constant is the value being point to, not the pointer address.</li>
+</ul>
+<p><strong>Syntax Forms</strong></p>
+<ol>
+<li><code>const DadaType* ptr = variableName;</code><br>
+or equivalently:<br>
+<code>DataType const* ptr = variableName;</code><br>
+-&gt; Pointer to an constant object(object cannot be modified through <code>ptr</code>).</li>
+<li><code>DataType* const ptr = variableName;</code><br>
+-&gt; Constant pointer (the pointer itself cannot be reassigned, but the object it points to can be modified).</li>
+</ol>
+<p><strong>Example</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> temp = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span>* a = &amp;temp;</span><br><span class="line"><span class="type">int</span> <span class="type">const</span>* a = &amp;temp;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Modification:</span></span><br><span class="line">*a = <span class="number">9</span>;     <span class="comment">// ❌ Error: cannot modify a read-only object through this pointer</span></span><br><span class="line">temp = <span class="number">9</span>;   <span class="comment">// ✅ Valid: the variable itself is not declared const</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<h5 id="2-Const-Pointer-T-const">2. Const Pointer (<code>T* const</code>)</h5>
+<p><strong>Definition</strong><br>
+A <strong>const pointer</strong> means that pointer’s address is fixed once initialized – you cannot make it point to another location afterwards.<br>
+What is constant here is the pointer itself, not the data it points to.</p>
+<p><strong>Key Property</strong></p>
+<ul>
+<li>The pointer must be initialized at the time of definition.</li>
+<li>After initialization, you cannot reassign it to another address.</li>
+<li>The object being pointed to remains mutable(unless it was declared <code>const</code> separately).</li>
+<li><strong>Syntax</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">DataType* <span class="type">const</span> pointerName = &amp;varaible;</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Example</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="type">int</span> temp = <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> temp1 = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span>* <span class="type">const</span> p = &amp;temp;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Modification:</span></span><br><span class="line">p = &amp;temp1;  <span class="comment">// ❌ Error: p is a const pointer, cannot change its address</span></span><br><span class="line">*p = <span class="number">9</span>;      <span class="comment">// ✅ Valid: the pointee (temp) is still mutable</span></span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>Interview</category>
