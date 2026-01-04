@@ -68,93 +68,6 @@ This provides:</p>
       </tags>
   </entry>
   <entry>
-    <title>C++ Note 1</title>
-    <url>/2025/09/16/C++/Note_1/</url>
-    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
-<h4 id="1">1</h4>
-<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
-<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>And inside consts.h you can write:</p>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
-<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
-<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
-<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
-<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
-For example:</p>
-<ul>
-<li>The <strong>global scope</strong> is outside all functions/classes.</li>
-<li>Each <strong>function</strong> has its own local scope.</li>
-<li>Each <strong>class</strong> has its own member scope.</li>
-<li>Each <strong>namespace</strong> has its own scope.</li>
-</ul>
-<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
-<table>
-<thead>
-<tr>
-<th>Part</th>
-<th>What it means</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
-<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td>The variable name for your lambda — you can call it like a normal function later</td>
-</tr>
-<tr>
-<td><code>&amp;</code> in <code>[&amp;]</code></td>
-<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
-</tr>
-<tr>
-<td><code>(ParamType p1, ParamType p2, ...)</code></td>
-<td>The <strong>parameter list</strong> with variable names</td>
-</tr>
-<tr>
-<td><code>-&gt; ReturnType</code></td>
-<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
-</tr>
-<tr>
-<td><code>{ ... }</code></td>
-<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="Understanding-C-Constructors">Understanding C++ Constructors</h2>
-<p>A constructor is a special function that runs when we create an object.<br>
-It has <strong>three main parts</strong>:</p>
-<h3 id="Parameters-the-input">Parameters (the input)</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">MyClass</span>(<span class="type">int</span> value, <span class="type">bool</span> f)</span><br></pre></td></tr></tbody></table></figure>
-<p>These are the inputs we pass when creating the object.</p>
-<p>Example:</p>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">obj</span><span class="params">(<span class="number">42</span>, <span class="literal">true</span>)</span></span>;</span><br></pre></td></tr></tbody></table></figure>
-<p>Here, value = 42 and f = true.</p>
-<h3 id="Member-initializer-list-after-the">Member initializer list after the :</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">: <span class="built_in">x</span>(value), <span class="built_in">flag</span>(f)</span><br></pre></td></tr></tbody></table></figure>
-<p>This part <strong>initializes</strong> the member variables directly with the inputs.<br>
-It is more efficient than assignment inside <code>{}</code> because the members are built with these values immediately.</p>
-<p>Think of it like:</p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>member</mtext><mo>=</mo><mtext>input</mtext></mrow><annotation encoding="application/x-tex"> \text{member} = \text{input} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">member</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8623em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">input</span></span></span></span></span></span>
-<h3 id="Constructor-body">Constructor body { }</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">{</span><br><span class="line"><span class="comment">// extra code runs here after members are initialized</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<p>This is where you put extra logic, loops, or setup code.<br>
-It runs after the member variables have been set.</p>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Note</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lec01 – Introduction to LSM Trees and Skip List Implementation</title>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
@@ -821,6 +734,93 @@ Flip to match logical NOT:</p>
       </tags>
   </entry>
   <entry>
+    <title>C++ Note 1</title>
+    <url>/2025/09/16/C++/Note_1/</url>
+    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
+<h4 id="1">1</h4>
+<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
+<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>And inside consts.h you can write:</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
+<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
+<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
+<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
+<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
+For example:</p>
+<ul>
+<li>The <strong>global scope</strong> is outside all functions/classes.</li>
+<li>Each <strong>function</strong> has its own local scope.</li>
+<li>Each <strong>class</strong> has its own member scope.</li>
+<li>Each <strong>namespace</strong> has its own scope.</li>
+</ul>
+<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
+<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>The variable name for your lambda — you can call it like a normal function later</td>
+</tr>
+<tr>
+<td><code>&amp;</code> in <code>[&amp;]</code></td>
+<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
+</tr>
+<tr>
+<td><code>(ParamType p1, ParamType p2, ...)</code></td>
+<td>The <strong>parameter list</strong> with variable names</td>
+</tr>
+<tr>
+<td><code>-&gt; ReturnType</code></td>
+<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
+</tr>
+<tr>
+<td><code>{ ... }</code></td>
+<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="Understanding-C-Constructors">Understanding C++ Constructors</h2>
+<p>A constructor is a special function that runs when we create an object.<br>
+It has <strong>three main parts</strong>:</p>
+<h3 id="Parameters-the-input">Parameters (the input)</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">MyClass</span>(<span class="type">int</span> value, <span class="type">bool</span> f)</span><br></pre></td></tr></tbody></table></figure>
+<p>These are the inputs we pass when creating the object.</p>
+<p>Example:</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">obj</span><span class="params">(<span class="number">42</span>, <span class="literal">true</span>)</span></span>;</span><br></pre></td></tr></tbody></table></figure>
+<p>Here, value = 42 and f = true.</p>
+<h3 id="Member-initializer-list-after-the">Member initializer list after the :</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">: <span class="built_in">x</span>(value), <span class="built_in">flag</span>(f)</span><br></pre></td></tr></tbody></table></figure>
+<p>This part <strong>initializes</strong> the member variables directly with the inputs.<br>
+It is more efficient than assignment inside <code>{}</code> because the members are built with these values immediately.</p>
+<p>Think of it like:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>member</mtext><mo>=</mo><mtext>input</mtext></mrow><annotation encoding="application/x-tex"> \text{member} = \text{input} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">member</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8623em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">input</span></span></span></span></span></span>
+<h3 id="Constructor-body">Constructor body { }</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">{</span><br><span class="line"><span class="comment">// extra code runs here after members are initialized</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>This is where you put extra logic, loops, or setup code.<br>
+It runs after the member variables have been set.</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Dynamic Programming Notes</title>
     <url>/2025/08/29/DataStructures-Algorithms/Dynamic-Programming-Notes/</url>
     <content><![CDATA[<h2 id="DP-Dependencies">DP Dependencies</h2>
@@ -1121,6 +1121,70 @@ dp[j] = \max \bigl(dp[j], \; v_i + dp[j - w_i] \bigr)
       </tags>
   </entry>
   <entry>
+    <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
+    <url>/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</url>
+    <content><![CDATA[<p>Do you want to start your own blog for free?<br>
+In this tutorial, I’ll show you how to build a blog <strong>from scratch</strong> using <a href="https://hexo.io/">Hexo</a> (a fast, Node.js-based blogging framework) and deploy it to <strong>GitHub Pages</strong> for free hosting.</p>
+<hr>
+<h2 id="Step-0-Install-Node-js">Step 0: Install Node.js</h2>
+<p>Check if Node.js and npm are installed:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
+<p>If missing (or you want a specific version), install via NodeSource. Example for Node 22:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://deb.nodesource.com/setup_22.x | <span class="built_in">sudo</span> -E bash -</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs</span><br></pre></td></tr></tbody></table></figure>
+<p>Verify installation:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-1-Install-Hexo-Create-Your-Blog">Step 1: Install Hexo &amp; Create Your Blog</h2>
+<p>Install Hexo CLI globally:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g hexo-cli</span><br></pre></td></tr></tbody></table></figure>
+<p>Create a new blog project:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></tbody></table></figure>
+<p>Or use the current folder:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init .</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-2-Write-Your-First-Blog-Post">Step 2: Write Your First Blog Post</h2>
+<p>Create a new post:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo new post <span class="string">"Hello World"</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Edit the generated file <code>source/_posts/hello-world.md</code>:</p>
+<figure class="highlight markdown"><table><tbody><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2025-08-26 22:00:00</span><br><span class="line"><span class="section">tags: [Intro]</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"></span><br><span class="line">Welcome to my first Hexo blog post!   </span><br><span class="line">This is written in <span class="strong">**Markdown**</span>.</span><br></pre></td></tr></tbody></table></figure>
+<p>Preview locally:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
+<p>Visit: <a href="http://localhost:4000">http://localhost:4000</a></p>
+<hr>
+<h2 id="Step-3-Install-a-Theme">Step 3: Install a Theme</h2>
+<p>Install the <strong>Next</strong> theme:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></tbody></table></figure>
+<p>Edit <code>_config.yml</code>:</p>
+<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Restart:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-4-Deploy-to-GitHub-Pages">Step 4: Deploy to GitHub Pages</h2>
+<p>Create a repo on GitHub (e.g. <code>my-blog</code>).<br>
+If your username is <code>yourname</code>:</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">https://yourname.github.io/my-blog/</span><br></pre></td></tr></tbody></table></figure>
+<p>Install deployer:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></tbody></table></figure>
+<p>Edit <code>_config.yml</code>:</p>
+<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/yourname/my-blog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">gh-pages</span></span><br></pre></td></tr></tbody></table></figure>
+<p>Deploy:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></tbody></table></figure>
+<hr>
+<h2 id="Step-5-Extra-Tweaks">Step 5: Extra Tweaks</h2>
+<p>Apple-style fonts:</p>
+<figure class="highlight css"><table><tbody><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> {</span><br><span class="line">  <span class="attribute">font-family</span>: -apple-system, BlinkMacSystemFont, <span class="string">"Helvetica Neue"</span>, Arial, sans-serif;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>Custom domain: create <code>source/CNAME</code> with your domain name.</p>
+<p>SEO &amp; Analytics: configure in theme <code>_config.yml</code>.</p>
+<hr>
+]]></content>
+      <categories>
+        <category>Guides</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C++ chapter</title>
     <url>/2025/08/28/Interview/C++/</url>
     <content><![CDATA[<h1>Common C++ Interview Questions</h1>
@@ -1375,6 +1439,90 @@ Declaring a constant reference means the referenced value is constant and cannot
 </tr>
 </tbody>
 </table>
+<h4 id="constexpr-and-const">constexpr and const</h4>
+<p>const represents read-only semantics, while constexpr represents constant-expression semantics.</p>
+<p>constexpr can only define compile-time constants, whereas const can define compile-time constants as well as run-time constants.</p>
+<p>If you mark a member function as constexpr, it is implicitly also marked as const.<br>
+If you mark a variable as constexpr, it is also const.<br>
+However, the reverse does not hold: a const variable or function is not necessarily constexpr.</p>
+<h5 id="constexpr-Variables">constexpr Variables</h5>
+<p>In complex systems, it can be difficult to determine whether an initializer is a constant expression.</p>
+<p>You can declare a variable as <code>constexpr</code> and let the compiler verify whether its value is a constant expression.</p>
+<p><strong>Must be initialized with a constant expression:</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> n = <span class="number">20</span>;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span> m = n + <span class="number">1</span>;</span><br><span class="line"><span class="type">static</span> <span class="keyword">constexpr</span> <span class="type">int</span> MOD = <span class="number">1000000007</span>;</span><br></pre></td></tr></tbody></table></figure>
+<p>If a pointer is declared using constexpr, constexpr applies only to the pointer itself, not to the object it points to.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">constexpr</span> <span class="type">int</span>* p = <span class="literal">nullptr</span>;     <span class="comment">// constant pointer (top-level const)</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span>* q = <span class="literal">nullptr</span>;         <span class="comment">// pointer to const (low-level const)</span></span><br><span class="line"><span class="type">int</span>* <span class="type">const</span> r = <span class="literal">nullptr</span>;         <span class="comment">// constant pointer (top-level const)</span></span><br></pre></td></tr></tbody></table></figure>
+<h5 id="constexpr-Functions">constexpr Functions</h5>
+<p>A <code>constexpr</code> function is a function that can be used in a constant expression.</p>
+<p>The return type and all parameter types must be literal types, and the function body must contain exactly one <code>return</code> statement.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="type">int</span> <span class="title">new_value</span><span class="params">()</span> </span>{ <span class="keyword">return</span> <span class="number">42</span>; }</span><br></pre></td></tr></tbody></table></figure>
+<p>To allow expansion during compilation, a <code>constexpr</code> function is implicitly treated as an inline function.</p>
+<p><code>constexpr</code> functions and inline functions can be defined multiple times in a program, and are typically defined in header files.</p>
+<h3 id="Difference-Between-Constant-Pointer-and-Pointer-to-Constant">Difference Between Constant Pointer and Pointer to Constant</h3>
+<ul>
+<li>
+<p>A constant pointer means the pointer itself is constant, but the content it points to can be changed.</p>
+</li>
+<li>
+<p>A pointer to constant means the content pointed to is constant, but the pointer itself can be changed.</p>
+</li>
+<li>
+<p>In a constant pointer, the keyword const appears after *.</p>
+</li>
+<li>
+<p>In a pointer to constant, the keyword const appears before *.</p>
+</li>
+</ul>
+<h3 id="Differences-Between-struct-and-class">Differences Between struct and class</h3>
+<ul>
+<li>
+<p>Generally, <code>struct</code> is used to represent a group of related data, while <code>class</code> is used to represent an object that encapsulates both data and operations.<br>
+In practice, you can choose between <code>struct</code> and <code>class</code> based on actual needs.<br>
+If the purpose is only to organize some data without complex encapsulation or inheritance, <code>struct</code> may be more straightforward.<br>
+If encapsulation, inheritance, and other object-oriented features are required, <code>class</code> is usually preferred.</p>
+</li>
+<li>
+<p>Members in a <code>struct</code> are <strong>public</strong> by default.<br>
+Members in a <code>class</code> are <strong>private</strong> by default.</p>
+</li>
+<li>
+<p>When using inheritance, <code>struct</code> uses <strong>public inheritance</strong> by default,<br>
+while <code>class</code> uses <strong>private inheritance</strong> by default.</p>
+</li>
+<li>
+<p>If a <code>struct</code> does not define any constructors, the compiler will generate a default no-argument constructor.<br>
+If a <code>class</code> does not define any constructors, the compiler will also generate a default no-argument constructor.</p>
+</li>
+</ul>
+<h3 id="Difference-Between-Local-Variables-and-Static-Local-Variables">Difference Between Local Variables and Static Local Variables</h3>
+<h4 id="1-Local-Variables">1. Local Variables</h4>
+<p>A local variable is a variable defined inside a function or block.</p>
+<h5 id="Characteristics">Characteristics</h5>
+<ul>
+<li><strong>Scope</strong>: Limited to the block or function where it is defined</li>
+<li><strong>Lifetime</strong>: Exists only while the block is executing</li>
+<li><strong>Storage</strong>: Typically allocated on the stack</li>
+<li><strong>Initialization</strong>: Re-initialized every time the function is called</li>
+<li><strong>Value retention</strong>: ❌ Does not retain value between calls</li>
+</ul>
+<h5 id="Example">Example</h5>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="type">int</span> count = <span class="number">0</span>;   <span class="comment">// local variable</span></span><br><span class="line">    count++;</span><br><span class="line">    cout &lt;&lt; count &lt;&lt; endl;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Output if called multiple times:</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<h4 id="2-Static-Local-Variables">2. Static Local Variables</h4>
+<p>A static local variable is a local variable declared with the static keyword.</p>
+<h5 id="Characteristics-2">Characteristics</h5>
+<ul>
+<li><strong>Scope</strong>: Limited to the function where it is defined</li>
+<li><strong>Lifetime</strong>: Exists for the entire program execution</li>
+<li><strong>Storage</strong>: Allocated in static storage area</li>
+<li><strong>Initialization</strong>: Initialized only once</li>
+<li><strong>Value retention</strong>: ✅ Retains value between function calls</li>
+</ul>
+<h5 id="Example-2">Example</h5>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> count = <span class="number">0</span>;   <span class="comment">// static local variable</span></span><br><span class="line">    count++;</span><br><span class="line">    cout &lt;&lt; count &lt;&lt; endl;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Output if called multiple times:</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>Interview</category>
@@ -1382,70 +1530,6 @@ Declaring a constant reference means the referenced value is constant and cannot
       <tags>
         <tag>C++</tag>
         <tag>interview</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Build a Blog from Scratch with Hexo and GitHub Pages</title>
-    <url>/2025/08/26/Guides/Building-a-Blog-with-GitHub-and-Hexo/</url>
-    <content><![CDATA[<p>Do you want to start your own blog for free?<br>
-In this tutorial, I’ll show you how to build a blog <strong>from scratch</strong> using <a href="https://hexo.io/">Hexo</a> (a fast, Node.js-based blogging framework) and deploy it to <strong>GitHub Pages</strong> for free hosting.</p>
-<hr>
-<h2 id="Step-0-Install-Node-js">Step 0: Install Node.js</h2>
-<p>Check if Node.js and npm are installed:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
-<p>If missing (or you want a specific version), install via NodeSource. Example for Node 22:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://deb.nodesource.com/setup_22.x | <span class="built_in">sudo</span> -E bash -</span><br><span class="line"><span class="built_in">sudo</span> apt install -y nodejs</span><br></pre></td></tr></tbody></table></figure>
-<p>Verify installation:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-1-Install-Hexo-Create-Your-Blog">Step 1: Install Hexo &amp; Create Your Blog</h2>
-<p>Install Hexo CLI globally:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> npm i -g hexo-cli</span><br></pre></td></tr></tbody></table></figure>
-<p>Create a new blog project:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init my-blog</span><br><span class="line"><span class="built_in">cd</span> my-blog</span><br><span class="line">npm install</span><br></pre></td></tr></tbody></table></figure>
-<p>Or use the current folder:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo init .</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-2-Write-Your-First-Blog-Post">Step 2: Write Your First Blog Post</h2>
-<p>Create a new post:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo new post <span class="string">"Hello World"</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Edit the generated file <code>source/_posts/hello-world.md</code>:</p>
-<figure class="highlight markdown"><table><tbody><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World</span><br><span class="line">date: 2025-08-26 22:00:00</span><br><span class="line"><span class="section">tags: [Intro]</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"></span><br><span class="line">Welcome to my first Hexo blog post!   </span><br><span class="line">This is written in <span class="strong">**Markdown**</span>.</span><br></pre></td></tr></tbody></table></figure>
-<p>Preview locally:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
-<p>Visit: <a href="http://localhost:4000">http://localhost:4000</a></p>
-<hr>
-<h2 id="Step-3-Install-a-Theme">Step 3: Install a Theme</h2>
-<p>Install the <strong>Next</strong> theme:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></tbody></table></figure>
-<p>Edit <code>_config.yml</code>:</p>
-<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Restart:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-4-Deploy-to-GitHub-Pages">Step 4: Deploy to GitHub Pages</h2>
-<p>Create a repo on GitHub (e.g. <code>my-blog</code>).<br>
-If your username is <code>yourname</code>:</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">https://yourname.github.io/my-blog/</span><br></pre></td></tr></tbody></table></figure>
-<p>Install deployer:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></tbody></table></figure>
-<p>Edit <code>_config.yml</code>:</p>
-<figure class="highlight yaml"><table><tbody><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/yourname/my-blog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">gh-pages</span></span><br></pre></td></tr></tbody></table></figure>
-<p>Deploy:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></tbody></table></figure>
-<hr>
-<h2 id="Step-5-Extra-Tweaks">Step 5: Extra Tweaks</h2>
-<p>Apple-style fonts:</p>
-<figure class="highlight css"><table><tbody><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> {</span><br><span class="line">  <span class="attribute">font-family</span>: -apple-system, BlinkMacSystemFont, <span class="string">"Helvetica Neue"</span>, Arial, sans-serif;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<p>Custom domain: create <code>source/CNAME</code> with your domain name.</p>
-<p>SEO &amp; Analytics: configure in theme <code>_config.yml</code>.</p>
-<hr>
-]]></content>
-      <categories>
-        <category>Guides</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
       </tags>
   </entry>
 </search>
