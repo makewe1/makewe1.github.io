@@ -68,58 +68,6 @@ This provides:</p>
       </tags>
   </entry>
   <entry>
-    <title>Lec02 – MemTable</title>
-    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
-    <content><![CDATA[<h1>1 MemTable Implementation</h1>
-<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Explanation">Explanation</h3>
-<p><strong>Active SkipList</strong></p>
-<ul>
-<li>
-<p>The in-memory structure currently accepting writes.</p>
-</li>
-<li>
-<p>All new inserts/updates go here.</p>
-</li>
-<li>
-<p>Reads first check this list.</p>
-</li>
-</ul>
-<p><strong>Frozen SkipLists</strong></p>
-<ul>
-<li>
-<p>When the active SkipList fills up, it is frozen (read-only).</p>
-</li>
-<li>
-<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
-</li>
-<li>
-<p>Reads must also check these until they are flushed.</p>
-</li>
-</ul>
-<p><strong>Client flow</strong></p>
-<ul>
-<li>
-<p>r1 (Write) → client writes into the active skip list.</p>
-</li>
-<li>
-<p>r1 (Read) → reads first check active skip list.</p>
-</li>
-<li>
-<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>AstraKV</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Database</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lec01 – Introduction to LSM Trees and Skip List Implementation</title>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
@@ -618,6 +566,145 @@ Only one thread at a time can hold the mutex.</p>
       </tags>
   </entry>
   <entry>
+    <title>Lec02 – MemTable</title>
+    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
+    <content><![CDATA[<h1>1 MemTable Implementation</h1>
+<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Explanation">Explanation</h3>
+<p><strong>Active SkipList</strong></p>
+<ul>
+<li>
+<p>The in-memory structure currently accepting writes.</p>
+</li>
+<li>
+<p>All new inserts/updates go here.</p>
+</li>
+<li>
+<p>Reads first check this list.</p>
+</li>
+</ul>
+<p><strong>Frozen SkipLists</strong></p>
+<ul>
+<li>
+<p>When the active SkipList fills up, it is frozen (read-only).</p>
+</li>
+<li>
+<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
+</li>
+<li>
+<p>Reads must also check these until they are flushed.</p>
+</li>
+</ul>
+<p><strong>Client flow</strong></p>
+<ul>
+<li>
+<p>r1 (Write) → client writes into the active skip list.</p>
+</li>
+<li>
+<p>r1 (Read) → reads first check active skip list.</p>
+</li>
+<li>
+<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>AstraKV</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Database</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C++ Note 1</title>
+    <url>/2025/09/16/C++/Note_1/</url>
+    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
+<h4 id="1">1</h4>
+<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
+<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>And inside consts.h you can write:</p>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
+<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
+<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
+<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
+<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
+For example:</p>
+<ul>
+<li>The <strong>global scope</strong> is outside all functions/classes.</li>
+<li>Each <strong>function</strong> has its own local scope.</li>
+<li>Each <strong>class</strong> has its own member scope.</li>
+<li>Each <strong>namespace</strong> has its own scope.</li>
+</ul>
+<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
+<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
+<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>The variable name for your lambda — you can call it like a normal function later</td>
+</tr>
+<tr>
+<td><code>&amp;</code> in <code>[&amp;]</code></td>
+<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
+</tr>
+<tr>
+<td><code>(ParamType p1, ParamType p2, ...)</code></td>
+<td>The <strong>parameter list</strong> with variable names</td>
+</tr>
+<tr>
+<td><code>-&gt; ReturnType</code></td>
+<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
+</tr>
+<tr>
+<td><code>{ ... }</code></td>
+<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="Understanding-C-Constructors">Understanding C++ Constructors</h2>
+<p>A constructor is a special function that runs when we create an object.<br>
+It has <strong>three main parts</strong>:</p>
+<h3 id="Parameters-the-input">Parameters (the input)</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">MyClass</span>(<span class="type">int</span> value, <span class="type">bool</span> f)</span><br></pre></td></tr></tbody></table></figure>
+<p>These are the inputs we pass when creating the object.</p>
+<p>Example:</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">obj</span><span class="params">(<span class="number">42</span>, <span class="literal">true</span>)</span></span>;</span><br></pre></td></tr></tbody></table></figure>
+<p>Here, value = 42 and f = true.</p>
+<h3 id="Member-initializer-list-after-the">Member initializer list after the :</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">: <span class="built_in">x</span>(value), <span class="built_in">flag</span>(f)</span><br></pre></td></tr></tbody></table></figure>
+<p>This part <strong>initializes</strong> the member variables directly with the inputs.<br>
+It is more efficient than assignment inside <code>{}</code> because the members are built with these values immediately.</p>
+<p>Think of it like:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>member</mtext><mo>=</mo><mtext>input</mtext></mrow><annotation encoding="application/x-tex"> \text{member} = \text{input} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">member</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8623em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">input</span></span></span></span></span></span>
+<h3 id="Constructor-body">Constructor body { }</h3>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">{</span><br><span class="line"><span class="comment">// extra code runs here after members are initialized</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>This is where you put extra logic, loops, or setup code.<br>
+It runs after the member variables have been set.</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Note</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS:APP 15213 Data Lab Guide</title>
     <url>/2025/08/28/CMU%2015-213/15-213%20data-lab/</url>
     <content><![CDATA[<h2 id="logicalNeg">logicalNeg</h2>
@@ -731,115 +818,6 @@ Flip to match logical NOT:</p>
       <tags>
         <tag>C</tag>
         <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Tree</title>
-    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
-    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
-<h2 id="Definition-Easy">Definition (Easy)</h2>
-<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
-<ul>
-<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
-<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
-<li><strong>Merging</strong> old files in the background to keep them organized</li>
-</ul>
-<h2 id="Function">Function</h2>
-<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
-]]></content>
-      <categories>
-        <category>DataStructure-Algorithms</category>
-      </categories>
-      <tags>
-        <tag>DataStructure Algorithms</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>C++ Note 1</title>
-    <url>/2025/09/16/C++/Note_1/</url>
-    <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
-<h4 id="1">1</h4>
-<p>When you want to share constants (like <code>SKIPLIST_P</code>) across your project, you normally put them in a header file inside your include/ directory. For example:</p>
-<figure class="highlight makefile"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">include</span>/</span><br><span class="line"> └── consts.h</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
-<p>And inside consts.h you can write:</p>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Old style (C / macros)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SKIPLIST_P 0.5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Modern C++ style (preferred)</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="type">double</span> SKIPLIST_P = <span class="number">0.5</span>;</span><br></pre></td></tr></tbody></table></figure>
-<p><code>#define</code> is a preprocessor macro. Before compilation, the preprocessor literally replaces every <code>SKIPLIST_P</code> with <code>0.5</code>. That’s why it doesn’t need a type.</p>
-<h4 id="Scope-Resolution-Operator">Scope Resolution Operator (<code>::</code>)</h4>
-<p>The <code>::</code> operator lets you <strong>explicitly tell the compiler which scope to use</strong>.</p>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">scope_name::identifier</span><br></pre></td></tr></tbody></table></figure>
-<p>A <strong>scope</strong> is a region of code where a name (variable, function, class, etc.) is visible.<br>
-For example:</p>
-<ul>
-<li>The <strong>global scope</strong> is outside all functions/classes.</li>
-<li>Each <strong>function</strong> has its own local scope.</li>
-<li>Each <strong>class</strong> has its own member scope.</li>
-<li>Each <strong>namespace</strong> has its own scope.</li>
-</ul>
-<h2 id="Structure-of-a-Lambda-with-std-function">Structure of a Lambda with <code>std::function</code></h2>
-<figure class="highlight c++"><table><tbody><tr><td class="code"><pre><span class="line">function&lt;ReturnType(ParamType1, ParamType2, ...)&gt; name =</span><br><span class="line">    [&amp;](ParamType1 p1, ParamType2 p2, ...) -&gt; ReturnType {</span><br><span class="line">        <span class="comment">// function body</span></span><br><span class="line">    };</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Meaning-of-Each-Part">Meaning of Each Part</h3>
-<table>
-<thead>
-<tr>
-<th>Part</th>
-<th>What it means</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>function&lt;ReturnType(ParamTypes...)&gt;</code></td>
-<td>Declares a variable that can hold <strong>any callable</strong> with those parameter and return types</td>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td>The variable name for your lambda — you can call it like a normal function later</td>
-</tr>
-<tr>
-<td><code>&amp;</code> in <code>[&amp;]</code></td>
-<td><strong>Capture all outer variables by reference</strong>, so the lambda can access them</td>
-</tr>
-<tr>
-<td><code>(ParamType p1, ParamType p2, ...)</code></td>
-<td>The <strong>parameter list</strong> with variable names</td>
-</tr>
-<tr>
-<td><code>-&gt; ReturnType</code></td>
-<td>The <strong>return type</strong> of the lambda (needed when doing recursion)</td>
-</tr>
-<tr>
-<td><code>{ ... }</code></td>
-<td>The <strong>function body</strong> — code that runs when you call the lambda</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="Understanding-C-Constructors">Understanding C++ Constructors</h2>
-<p>A constructor is a special function that runs when we create an object.<br>
-It has <strong>three main parts</strong>:</p>
-<h3 id="Parameters-the-input">Parameters (the input)</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">MyClass</span>(<span class="type">int</span> value, <span class="type">bool</span> f)</span><br></pre></td></tr></tbody></table></figure>
-<p>These are the inputs we pass when creating the object.</p>
-<p>Example:</p>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="function">MyClass <span class="title">obj</span><span class="params">(<span class="number">42</span>, <span class="literal">true</span>)</span></span>;</span><br></pre></td></tr></tbody></table></figure>
-<p>Here, value = 42 and f = true.</p>
-<h3 id="Member-initializer-list-after-the">Member initializer list after the :</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">: <span class="built_in">x</span>(value), <span class="built_in">flag</span>(f)</span><br></pre></td></tr></tbody></table></figure>
-<p>This part <strong>initializes</strong> the member variables directly with the inputs.<br>
-It is more efficient than assignment inside <code>{}</code> because the members are built with these values immediately.</p>
-<p>Think of it like:</p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>member</mtext><mo>=</mo><mtext>input</mtext></mrow><annotation encoding="application/x-tex"> \text{member} = \text{input} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">member</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8623em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">input</span></span></span></span></span></span>
-<h3 id="Constructor-body">Constructor body { }</h3>
-<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"></span><br><span class="line">{</span><br><span class="line"><span class="comment">// extra code runs here after members are initialized</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
-<p>This is where you put extra logic, loops, or setup code.<br>
-It runs after the member variables have been set.</p>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Note</tag>
       </tags>
   </entry>
   <entry>
@@ -1112,6 +1090,28 @@ dp[j] = \max \bigl(dp[j], \; v_i + dp[j - w_i] \bigr)
 <p>with ( j ) iterating <strong>from ( W ) down to ( w_i )</strong>.</p>
 <h5 id="1D-DP-Solution">1D DP Solution</h5>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">knapsack_dp_1d</span>(<span class="params">weights, values, capacity</span>):</span><br><span class="line">    n = <span class="built_in">len</span>(weights)</span><br><span class="line">    dp = [<span class="number">0</span>] * (capacity + <span class="number">1</span>)  <span class="comment"># dp[w] = best value for capacity w so far</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):        <span class="comment"># items 1..n</span></span><br><span class="line">        w_i, v_i = weights[i-<span class="number">1</span>], values[i-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># Right → left so we use previous row values before overwriting</span></span><br><span class="line">        <span class="keyword">for</span> w <span class="keyword">in</span> <span class="built_in">range</span>(capacity, w_i - <span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            dp[w] = <span class="built_in">max</span>(dp[w], v_i + dp[w - w_i])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> dp[capacity]</span><br></pre></td></tr></tbody></table></figure>
+]]></content>
+      <categories>
+        <category>DataStructure-Algorithms</category>
+      </categories>
+      <tags>
+        <tag>DataStructure Algorithms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tree</title>
+    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
+    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
+<h2 id="Definition-Easy">Definition (Easy)</h2>
+<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
+<ul>
+<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
+<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
+<li><strong>Merging</strong> old files in the background to keep them organized</li>
+</ul>
+<h2 id="Function">Function</h2>
+<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>DataStructure-Algorithms</category>
