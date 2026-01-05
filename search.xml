@@ -1,73 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Lec00 – Project Overview and Environment Setup</title>
-    <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
-    <content><![CDATA[<h1>0. Project Overview</h1>
-<h2 id="0-1-Project-Content">0.1 Project Content</h2>
-<p>This project is a <strong>Key-Value (KV) storage engine</strong> built on the <strong>Log-Structured Merge-Tree (LSM Tree)</strong> architecture.<br>
-It is about:</p>
-<ol>
-<li>The fundamental principles of KV storage engines</li>
-<li>Core concepts of LSM Tree, a widely used storage architecture</li>
-<li>Common practices in modern C++ programming</li>
-</ol>
-<h1>1. Operating System and Compiler Environment</h1>
-<p>The project is developed using <strong>modern C++ (up to C++17 standard)</strong>.<br>
-Any compiler that supports <strong>C++20 or later</strong> (such as <code>g++</code> or <code>clang++</code>) is fully compatible for building the system.</p>
-<p>The development environment is based on <strong>Kali Linux</strong> running on WSL2. Since Kali and Ubuntu are both Debian-based distributions using the <code>apt</code> package manager, the installation instructions provided are directly applicable to Ubuntu or Debian systems as well.</p>
-<h2 id="1-1-Compiler-Installation">1.1 Compiler Installation</h2>
-<p>The project requires a modern C++ compiler. On Debian-based systems such as Ubuntu or Kali Linux, both GCC and G++ can be installed with the following commands:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y gcc</span><br><span class="line"><span class="built_in">sudo</span> apt install -y g++</span><br></pre></td></tr></tbody></table></figure>
-<h2 id="1-2-Language-Server">1.2 Language Server</h2>
-<p>To enhance the development experience, this project adopts <strong>clangd</strong> as the language server.<br>
-Clangd is a lightweight C/C++ language server that integrates seamlessly with modern editors such as VS Code. It provides:</p>
-<ul>
-<li>Intelligent code completion</li>
-<li>Go-to-definition and symbol navigation</li>
-<li>Real-time diagnostics and error highlighting</li>
-<li>Semantic syntax highlighting</li>
-</ul>
-<p>On Debian-based systems, clangd can be installed with:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y clangd</span><br></pre></td></tr></tbody></table></figure>
-<h1>2. Project Management Tools</h1>
-<h2 id="2-1-Xmake">2.1 Xmake</h2>
-<h3 id="2-1-1-Installation">2.1.1 Installation</h3>
-<p>This project uses <strong>Xmake</strong> as its primary project management tool.<br>
-Xmake can be viewed as a combination of <strong>Make + CMake + vcpkg</strong>, providing functionality for:</p>
-<ul>
-<li>Project building</li>
-<li>Dependency management</li>
-<li>Execution and packaging</li>
-</ul>
-<p>Xmake can be installed with the following command:</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text | bash</span><br></pre></td></tr></tbody></table></figure>
-<p>For more details, refer to the official documentation:<a href="https://xmake.io/#/getting_started">Xmake – Getting Started</a></p>
-<h1>3. VS Code Configuration</h1>
-<h2 id="3-1-Code-Completion-and-Navigation">3.1 Code Completion and Navigation</h2>
-<p>This project uses <strong>clangd</strong> as the language server.<br>
-After installing clangd on your system, the next step is to enable it in VS Code.</p>
-<p>To do so, install the <strong>clangd extension</strong> from the VS Code marketplace.<br>
-This provides:</p>
-<ul>
-<li>Intelligent code completion</li>
-<li>Go-to-definition and symbol navigation</li>
-<li>Real-time diagnostics and error highlighting</li>
-</ul>
-<p><img src="clangd.png" alt="Xmake plugin in VS Code"></p>
-<h2 id="3-2-Integrating-Xmake">3.2 Integrating Xmake</h2>
-<p>In VSCode, the <strong>Xmake project management tool</strong> is supported. We can install the <strong>Xmake extension</strong>, which makes it more convenient to use Xmake for project management directly within VSCode.</p>
-<p><img src="xmake.png" alt="Xmake plugin in VS Code"></p>
-]]></content>
-      <categories>
-        <category>AstraKV</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Database</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lec01 – Introduction to LSM Trees and Skip List Implementation</title>
     <url>/2025/09/14/AstraKV/Lec01%20%E2%80%93%20Introduction%20to%20LSM%20Trees%20and%20Skip%20List%20Implementation/</url>
     <content><![CDATA[<h1>1 LSM Tree Overall Architecture</h1>
@@ -566,48 +499,63 @@ Only one thread at a time can hold the mutex.</p>
       </tags>
   </entry>
   <entry>
-    <title>Lec02 – MemTable</title>
-    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
-    <content><![CDATA[<h1>1 MemTable Implementation</h1>
-<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Explanation">Explanation</h3>
-<p><strong>Active SkipList</strong></p>
+    <title>Lec00 – Project Overview and Environment Setup</title>
+    <url>/2025/08/26/AstraKV/Lec00-ProjectSetupAndEnvironment/</url>
+    <content><![CDATA[<h1>0. Project Overview</h1>
+<h2 id="0-1-Project-Content">0.1 Project Content</h2>
+<p>This project is a <strong>Key-Value (KV) storage engine</strong> built on the <strong>Log-Structured Merge-Tree (LSM Tree)</strong> architecture.<br>
+It is about:</p>
+<ol>
+<li>The fundamental principles of KV storage engines</li>
+<li>Core concepts of LSM Tree, a widely used storage architecture</li>
+<li>Common practices in modern C++ programming</li>
+</ol>
+<h1>1. Operating System and Compiler Environment</h1>
+<p>The project is developed using <strong>modern C++ (up to C++17 standard)</strong>.<br>
+Any compiler that supports <strong>C++20 or later</strong> (such as <code>g++</code> or <code>clang++</code>) is fully compatible for building the system.</p>
+<p>The development environment is based on <strong>Kali Linux</strong> running on WSL2. Since Kali and Ubuntu are both Debian-based distributions using the <code>apt</code> package manager, the installation instructions provided are directly applicable to Ubuntu or Debian systems as well.</p>
+<h2 id="1-1-Compiler-Installation">1.1 Compiler Installation</h2>
+<p>The project requires a modern C++ compiler. On Debian-based systems such as Ubuntu or Kali Linux, both GCC and G++ can be installed with the following commands:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y gcc</span><br><span class="line"><span class="built_in">sudo</span> apt install -y g++</span><br></pre></td></tr></tbody></table></figure>
+<h2 id="1-2-Language-Server">1.2 Language Server</h2>
+<p>To enhance the development experience, this project adopts <strong>clangd</strong> as the language server.<br>
+Clangd is a lightweight C/C++ language server that integrates seamlessly with modern editors such as VS Code. It provides:</p>
 <ul>
-<li>
-<p>The in-memory structure currently accepting writes.</p>
-</li>
-<li>
-<p>All new inserts/updates go here.</p>
-</li>
-<li>
-<p>Reads first check this list.</p>
-</li>
+<li>Intelligent code completion</li>
+<li>Go-to-definition and symbol navigation</li>
+<li>Real-time diagnostics and error highlighting</li>
+<li>Semantic syntax highlighting</li>
 </ul>
-<p><strong>Frozen SkipLists</strong></p>
+<p>On Debian-based systems, clangd can be installed with:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y clangd</span><br></pre></td></tr></tbody></table></figure>
+<h1>2. Project Management Tools</h1>
+<h2 id="2-1-Xmake">2.1 Xmake</h2>
+<h3 id="2-1-1-Installation">2.1.1 Installation</h3>
+<p>This project uses <strong>Xmake</strong> as its primary project management tool.<br>
+Xmake can be viewed as a combination of <strong>Make + CMake + vcpkg</strong>, providing functionality for:</p>
 <ul>
-<li>
-<p>When the active SkipList fills up, it is frozen (read-only).</p>
-</li>
-<li>
-<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
-</li>
-<li>
-<p>Reads must also check these until they are flushed.</p>
-</li>
+<li>Project building</li>
+<li>Dependency management</li>
+<li>Execution and packaging</li>
 </ul>
-<p><strong>Client flow</strong></p>
+<p>Xmake can be installed with the following command:</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">curl -fsSL https://xmake.io/shget.text | bash</span><br></pre></td></tr></tbody></table></figure>
+<p>For more details, refer to the official documentation:<a href="https://xmake.io/#/getting_started">Xmake – Getting Started</a></p>
+<h1>3. VS Code Configuration</h1>
+<h2 id="3-1-Code-Completion-and-Navigation">3.1 Code Completion and Navigation</h2>
+<p>This project uses <strong>clangd</strong> as the language server.<br>
+After installing clangd on your system, the next step is to enable it in VS Code.</p>
+<p>To do so, install the <strong>clangd extension</strong> from the VS Code marketplace.<br>
+This provides:</p>
 <ul>
-<li>
-<p>r1 (Write) → client writes into the active skip list.</p>
-</li>
-<li>
-<p>r1 (Read) → reads first check active skip list.</p>
-</li>
-<li>
-<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
-</li>
+<li>Intelligent code completion</li>
+<li>Go-to-definition and symbol navigation</li>
+<li>Real-time diagnostics and error highlighting</li>
 </ul>
+<p><img src="clangd.png" alt="Xmake plugin in VS Code"></p>
+<h2 id="3-2-Integrating-Xmake">3.2 Integrating Xmake</h2>
+<p>In VSCode, the <strong>Xmake project management tool</strong> is supported. We can install the <strong>Xmake extension</strong>, which makes it more convenient to use Xmake for project management directly within VSCode.</p>
+<p><img src="xmake.png" alt="Xmake plugin in VS Code"></p>
 ]]></content>
       <categories>
         <category>AstraKV</category>
@@ -702,6 +650,58 @@ It runs after the member variables have been set.</p>
       <tags>
         <tag>C++</tag>
         <tag>Note</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lec02 – MemTable</title>
+    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
+    <content><![CDATA[<h1>1 MemTable Implementation</h1>
+<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Explanation">Explanation</h3>
+<p><strong>Active SkipList</strong></p>
+<ul>
+<li>
+<p>The in-memory structure currently accepting writes.</p>
+</li>
+<li>
+<p>All new inserts/updates go here.</p>
+</li>
+<li>
+<p>Reads first check this list.</p>
+</li>
+</ul>
+<p><strong>Frozen SkipLists</strong></p>
+<ul>
+<li>
+<p>When the active SkipList fills up, it is frozen (read-only).</p>
+</li>
+<li>
+<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
+</li>
+<li>
+<p>Reads must also check these until they are flushed.</p>
+</li>
+</ul>
+<p><strong>Client flow</strong></p>
+<ul>
+<li>
+<p>r1 (Write) → client writes into the active skip list.</p>
+</li>
+<li>
+<p>r1 (Read) → reads first check active skip list.</p>
+</li>
+<li>
+<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>AstraKV</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Database</tag>
       </tags>
   </entry>
   <entry>
@@ -818,28 +818,6 @@ Flip to match logical NOT:</p>
       <tags>
         <tag>C</tag>
         <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Tree</title>
-    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
-    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
-<h2 id="Definition-Easy">Definition (Easy)</h2>
-<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
-<ul>
-<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
-<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
-<li><strong>Merging</strong> old files in the background to keep them organized</li>
-</ul>
-<h2 id="Function">Function</h2>
-<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
-]]></content>
-      <categories>
-        <category>DataStructure-Algorithms</category>
-      </categories>
-      <tags>
-        <tag>DataStructure Algorithms</tag>
       </tags>
   </entry>
   <entry>
@@ -1112,6 +1090,28 @@ dp[j] = \max \bigl(dp[j], \; v_i + dp[j - w_i] \bigr)
 <p>with ( j ) iterating <strong>from ( W ) down to ( w_i )</strong>.</p>
 <h5 id="1D-DP-Solution">1D DP Solution</h5>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">knapsack_dp_1d</span>(<span class="params">weights, values, capacity</span>):</span><br><span class="line">    n = <span class="built_in">len</span>(weights)</span><br><span class="line">    dp = [<span class="number">0</span>] * (capacity + <span class="number">1</span>)  <span class="comment"># dp[w] = best value for capacity w so far</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):        <span class="comment"># items 1..n</span></span><br><span class="line">        w_i, v_i = weights[i-<span class="number">1</span>], values[i-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># Right → left so we use previous row values before overwriting</span></span><br><span class="line">        <span class="keyword">for</span> w <span class="keyword">in</span> <span class="built_in">range</span>(capacity, w_i - <span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            dp[w] = <span class="built_in">max</span>(dp[w], v_i + dp[w - w_i])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> dp[capacity]</span><br></pre></td></tr></tbody></table></figure>
+]]></content>
+      <categories>
+        <category>DataStructure-Algorithms</category>
+      </categories>
+      <tags>
+        <tag>DataStructure Algorithms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tree</title>
+    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
+    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
+<h2 id="Definition-Easy">Definition (Easy)</h2>
+<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
+<ul>
+<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
+<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
+<li><strong>Merging</strong> old files in the background to keep them organized</li>
+</ul>
+<h2 id="Function">Function</h2>
+<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>DataStructure-Algorithms</category>
@@ -1553,6 +1553,45 @@ to a derived-class pointer or reference.</p>
 <p>❌ Unsafe<br>
 ❌ No runtime check<br>
 ❌ Undefined behavior if object is not actually <code>Derived</code></p>
+<h3 id="C-Explicit-Type-Casting">C++ Explicit Type Casting</h3>
+<p><strong>Keywords:</strong> <code>static_cast</code>, <code>dynamic_cast</code>, <code>reinterpret_cast</code>, <code>const_cast</code></p>
+<hr>
+<h4 id="1-static-cast">1. <code>static_cast</code></h4>
+<p><code>static_cast</code> does not perform runtime type checking to guarantee the safety of the conversion.</p>
+<ul>
+<li>
+<p><strong>Upcasting</strong><br>
+(converting a derived-class pointer or reference to a base-class representation)<br>
+is safe.</p>
+</li>
+<li>
+<p><strong>Downcasting</strong><br>
+(converting a base-class pointer or reference to a derived-class representation)<br>
+is unsafe, because there is no dynamic type checking.</p>
+</li>
+</ul>
+<p><strong>Usage</strong></p>
+<ol>
+<li>Used for conversions between basic data types, such as converting <code>int</code> to <code>char</code>.</li>
+<li>Used to convert any expression to type <code>void</code>.</li>
+</ol>
+<h3 id="C-Virtual-Functions">C++ Virtual Functions</h3>
+<p><strong>1. Introduction</strong></p>
+<p>In C++, a virtual function is a member function of a class that is declared using the keyword <code>virtual</code> and is intended to be overridden in a derived class.</p>
+<p>Virtual functions enable runtime polymorphism, which means the function that is executed is determined at runtime based on the actual type of the object, not the type of the pointer or reference used to access it.</p>
+<p><strong>1. Motivation</strong></p>
+<p>By default, C++ uses compile-time dispatch, where function calls are resolved based on the static type.</p>
+<p>This behavior prevents correct polymorphic behavior when using base-class pointers or references.</p>
+<p>Virtual functions solve this problem by deferring function selection until runtime.</p>
+<p><strong>1. Basic Example</strong></p>
+<p><strong>3.1 Without Virtual Function (Compile-Time Dispatch)</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span> {</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">speak</span><span class="params">()</span> </span>{</span><br><span class="line">        cout &lt;&lt; <span class="string">"Base speaking"</span> &lt;&lt; endl;</span><br><span class="line">    }</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span> : <span class="keyword">public</span> Base {</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">speak</span><span class="params">()</span> </span>{</span><br><span class="line">        cout &lt;&lt; <span class="string">"Derived speaking"</span> &lt;&lt; endl;</span><br><span class="line">    }</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line">Base* b = <span class="keyword">new</span> <span class="built_in">Derived</span>();</span><br><span class="line">b-&gt;<span class="built_in">speak</span>();</span><br></pre></td></tr></tbody></table></figure>
+<p>Output:</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Base speaking</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>3.2 With Virtual Function (Runtime Dispatch)</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Base</span> {</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">speak</span><span class="params">()</span> </span>{</span><br><span class="line">        cout &lt;&lt; <span class="string">"Base speaking"</span> &lt;&lt; endl;</span><br><span class="line">    }</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Derived</span> : <span class="keyword">public</span> Base {</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">speak</span><span class="params">()</span> <span class="keyword">override</span> </span>{</span><br><span class="line">        cout &lt;&lt; <span class="string">"Derived speaking"</span> &lt;&lt; endl;</span><br><span class="line">    }</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line">Base* b = <span class="keyword">new</span> <span class="built_in">Derived</span>();</span><br><span class="line">b-&gt;<span class="built_in">speak</span>();</span><br></pre></td></tr></tbody></table></figure>
+<p>Output:</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Derived speaking</span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>Interview</category>
