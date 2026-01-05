@@ -566,6 +566,58 @@ Only one thread at a time can hold the mutex.</p>
       </tags>
   </entry>
   <entry>
+    <title>Lec02 – MemTable</title>
+    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
+    <content><![CDATA[<h1>1 MemTable Implementation</h1>
+<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Explanation">Explanation</h3>
+<p><strong>Active SkipList</strong></p>
+<ul>
+<li>
+<p>The in-memory structure currently accepting writes.</p>
+</li>
+<li>
+<p>All new inserts/updates go here.</p>
+</li>
+<li>
+<p>Reads first check this list.</p>
+</li>
+</ul>
+<p><strong>Frozen SkipLists</strong></p>
+<ul>
+<li>
+<p>When the active SkipList fills up, it is frozen (read-only).</p>
+</li>
+<li>
+<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
+</li>
+<li>
+<p>Reads must also check these until they are flushed.</p>
+</li>
+</ul>
+<p><strong>Client flow</strong></p>
+<ul>
+<li>
+<p>r1 (Write) → client writes into the active skip list.</p>
+</li>
+<li>
+<p>r1 (Read) → reads first check active skip list.</p>
+</li>
+<li>
+<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>AstraKV</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Database</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C++ Note 1</title>
     <url>/2025/09/16/C++/Note_1/</url>
     <content><![CDATA[<h2 id="Miscellaneous">Miscellaneous</h2>
@@ -650,58 +702,6 @@ It runs after the member variables have been set.</p>
       <tags>
         <tag>C++</tag>
         <tag>Note</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Lec02 – MemTable</title>
-    <url>/2025/09/22/AstraKV/Lec02-MemTable/</url>
-    <content><![CDATA[<h1>1 MemTable Implementation</h1>
-<h2 id="1-1-Principle-Analysis">1.1 Principle Analysis</h2>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">                 ┌───────────────┐</span><br><span class="line">                 │    Client     │</span><br><span class="line">                 └───────┬───────┘</span><br><span class="line">                         │</span><br><span class="line">               r1. Write to active SkipList</span><br><span class="line">                         │</span><br><span class="line">                         ▼</span><br><span class="line">               ┌───────────────────┐</span><br><span class="line">               │      MemTable     │</span><br><span class="line">               │                   │</span><br><span class="line">               │   Active SkipList │  &lt;─── current writes go here</span><br><span class="line">               │                   │</span><br><span class="line">               │   Frozen SkipList │  &lt;─── once full, turned read-only</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               │   Frozen SkipList │</span><br><span class="line">               └───────────────────┘</span><br><span class="line">                  ▲             ▲</span><br><span class="line">                  │             │</span><br><span class="line">r1. Query active SkipList      r2. Query frozen SkipList</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="Explanation">Explanation</h3>
-<p><strong>Active SkipList</strong></p>
-<ul>
-<li>
-<p>The in-memory structure currently accepting writes.</p>
-</li>
-<li>
-<p>All new inserts/updates go here.</p>
-</li>
-<li>
-<p>Reads first check this list.</p>
-</li>
-</ul>
-<p><strong>Frozen SkipLists</strong></p>
-<ul>
-<li>
-<p>When the active SkipList fills up, it is frozen (read-only).</p>
-</li>
-<li>
-<p>Eventually, these frozen skip lists are flushed to disk as SSTables.</p>
-</li>
-<li>
-<p>Reads must also check these until they are flushed.</p>
-</li>
-</ul>
-<p><strong>Client flow</strong></p>
-<ul>
-<li>
-<p>r1 (Write) → client writes into the active skip list.</p>
-</li>
-<li>
-<p>r1 (Read) → reads first check active skip list.</p>
-</li>
-<li>
-<p>r2 (Read) → if not found, reads also check frozen skip lists.</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>AstraKV</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>Database</tag>
       </tags>
   </entry>
   <entry>
@@ -1090,6 +1090,28 @@ dp[j] = \max \bigl(dp[j], \; v_i + dp[j - w_i] \bigr)
 <p>with ( j ) iterating <strong>from ( W ) down to ( w_i )</strong>.</p>
 <h5 id="1D-DP-Solution">1D DP Solution</h5>
 <figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">knapsack_dp_1d</span>(<span class="params">weights, values, capacity</span>):</span><br><span class="line">    n = <span class="built_in">len</span>(weights)</span><br><span class="line">    dp = [<span class="number">0</span>] * (capacity + <span class="number">1</span>)  <span class="comment"># dp[w] = best value for capacity w so far</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):        <span class="comment"># items 1..n</span></span><br><span class="line">        w_i, v_i = weights[i-<span class="number">1</span>], values[i-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># Right → left so we use previous row values before overwriting</span></span><br><span class="line">        <span class="keyword">for</span> w <span class="keyword">in</span> <span class="built_in">range</span>(capacity, w_i - <span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">            dp[w] = <span class="built_in">max</span>(dp[w], v_i + dp[w - w_i])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> dp[capacity]</span><br></pre></td></tr></tbody></table></figure>
+]]></content>
+      <categories>
+        <category>DataStructure-Algorithms</category>
+      </categories>
+      <tags>
+        <tag>DataStructure Algorithms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tree</title>
+    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
+    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
+<h2 id="Definition-Easy">Definition (Easy)</h2>
+<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
+<ul>
+<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
+<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
+<li><strong>Merging</strong> old files in the background to keep them organized</li>
+</ul>
+<h2 id="Function">Function</h2>
+<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
 ]]></content>
       <categories>
         <category>DataStructure-Algorithms</category>
@@ -1715,6 +1737,121 @@ Rather, after an application allocates a block of memory, due to design errors, 
 <p>However, when creating an object, the complete type must be known.</p>
 <p>In particular, you must know the <strong>exact type</strong> of the object you want to create.</p>
 <p>Therefore, constructors should not be declared as virtual.</p>
+<h3 id="What-Are-Smart-Pointers-What-Types-Are-There">What Are Smart Pointers? What Types Are There?</h3>
+<p>Smart pointers are objects used to manage dynamically allocated memory.<br>
+Their main purpose is to <strong>avoid memory leaks</strong> and <strong>simplify resource management</strong>.</p>
+<p><strong>1. <code>std::unique_ptr</code> (Exclusive Smart Pointer)</strong></p>
+<p><code>std::unique_ptr</code> provides exclusive ownership of a dynamically allocated object.</p>
+<p>Through exclusive ownership, it ensures that only <strong>one</strong> <code>std::unique_ptr</code> owns a resource at any time.</p>
+<p><code>std::unique_ptr</code> can own a specific memory resource.</p>
+<p>Move semantics and rvalue references allow <code>std::unique_ptr</code> to be transferred efficiently when ownership is moved.</p>
+<p><strong>2. <code>std::shared_ptr</code> (Shared Smart Pointer)</strong></p>
+<p><code>std::shared_ptr</code> allows multiple smart pointers to share the same memory resource.</p>
+<p>Internally, it uses <strong>reference counting</strong> to track how many objects share ownership.</p>
+<p>When the reference count becomes zero, the resource is released.</p>
+<p>It provides flexible memory sharing, but may cause <strong>cyclic reference problems</strong>.</p>
+<p><strong>3. <code>std::weak_ptr</code> (Weak Reference Smart Pointer)</strong></p>
+<ul>
+<li><code>std::weak_ptr</code> is used to solve cyclic reference problems caused by <code>std::shared_ptr</code></li>
+<li><code>std::weak_ptr</code> can be created from a <code>std::shared_ptr</code>, but it does <strong>not</strong> increase the reference count and does not affect resource release</li>
+<li>By calling <code>std::weak_ptr::lock()</code>, a <code>std::shared_ptr</code> can be obtained to access the resource</li>
+</ul>
+<p><strong>Comparing Ownership With and Without <code>std::weak_ptr</code></strong></p>
+<p>This note compares two designs for bidirectional relationships between objects in C++:</p>
+<ul>
+<li>❌ Using only <code>std::shared_ptr</code></li>
+<li>✅ Using <code>std::weak_ptr</code> to break ownership cycles</li>
+</ul>
+<p><strong>Case 1: ❌ NOT Using <code>std::weak_ptr</code> (Cyclic Ownership)</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> {</span><br><span class="line">    std::shared_ptr&lt;B&gt; b;</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span> {</span><br><span class="line">    std::shared_ptr&lt;A&gt; a;</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> a = std::<span class="built_in">make_shared</span>&lt;A&gt;();</span><br><span class="line"><span class="keyword">auto</span> b = std::<span class="built_in">make_shared</span>&lt;B&gt;();</span><br><span class="line"></span><br><span class="line">a-&gt;b = b;</span><br><span class="line">b-&gt;a = a;</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Ownership Relationships</strong></p>
+<ul>
+<li><code>a</code> owns <code>A</code></li>
+<li><code>b</code> owns <code>B</code></li>
+<li><code>A::b</code> owns <code>B</code></li>
+<li><code>B::a</code> owns <code>A</code></li>
+</ul>
+<p><strong>Reference Counts</strong></p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Owners</th>
+<th>Reference Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>a</code>, <code>b-&gt;a</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>b</code>, <code>a-&gt;b</code></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What Happens at Program End?</strong></p>
+<p>When <code>main()</code> ends:</p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">a   <span class="comment">// destroyed</span></span><br><span class="line">b   <span class="comment">// destroyed</span></span><br></pre></td></tr></tbody></table></figure>
+<p>But:</p>
+<ul>
+<li>
+<p>A is still owned by B::a</p>
+</li>
+<li>
+<p>B is still owned by A::b</p>
+</li>
+</ul>
+<p>So:</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">A count = 1</span><br><span class="line">B count = 1</span><br></pre></td></tr></tbody></table></figure>
+<p>❌ Neither object is destroyed<br>
+❌ Destructors are never called<br>
+❌ Memory leak occurs</p>
+<p><strong>Case 2: ✅ Using <code>std::weak_ptr</code> (Correct Design)</strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> {</span><br><span class="line">    std::shared_ptr&lt;B&gt; b;</span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">B</span> {</span><br><span class="line">    std::weak_ptr&lt;A&gt; a;   <span class="comment">// 🔑 weak_ptr</span></span><br><span class="line">};</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> a = std::<span class="built_in">make_shared</span>&lt;A&gt;();</span><br><span class="line"><span class="keyword">auto</span> b = std::<span class="built_in">make_shared</span>&lt;B&gt;();</span><br><span class="line"></span><br><span class="line">a-&gt;b = b;</span><br><span class="line">b-&gt;a = a;</span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Ownership Relationships</strong></p>
+<ul>
+<li><code>A</code> owns <code>B</code></li>
+<li><code>B</code> only observes <code>A</code></li>
+<li><code>weak_ptr</code> does not increase reference count</li>
+</ul>
+<p><strong>Reference Counts</strong></p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Owners</th>
+<th>Reference Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>a</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>b</code>, <code>a-&gt;b</code></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Destruction Sequence</strong></p>
+<p><strong>Step 1: Destroy <code>b</code></strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">b.<span class="built_in">reset</span>();</span><br><span class="line"></span><br><span class="line">B count: <span class="number">2</span> → <span class="number">1</span></span><br></pre></td></tr></tbody></table></figure>
+<p><strong>Step 2: Destroy <code>a</code></strong></p>
+<figure class="highlight cpp"><table><tbody><tr><td class="code"><pre><span class="line">a.<span class="built_in">reset</span>();</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<ul>
+<li><code>A</code> count: 1 → 0 → <code>A</code> destroyed</li>
+<li>Destroying <code>A</code> destroys <code>A::b</code></li>
+<li><code>B</code> count: 1 → 0 → <code>B</code> destroyed</li>
+</ul>
+<p>✅ All memory released<br>
+✅ No leaks</p>
 ]]></content>
       <categories>
         <category>Interview</category>
@@ -1722,28 +1859,6 @@ Rather, after an application allocates a block of memory, due to design errors, 
       <tags>
         <tag>C++</tag>
         <tag>interview</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Tree</title>
-    <url>/2025/08/29/DataStructures-Algorithms/Tree/</url>
-    <content><![CDATA[<h1>Log-Structured Merge Tree (LSM-tree)</h1>
-<h2 id="Definition-Easy">Definition (Easy)</h2>
-<p>An <strong>LSM-tree</strong> is a way to store <strong>key–value data</strong> that makes <strong>writing very fast</strong> by:</p>
-<ul>
-<li><strong>First writing</strong> new data into memory (a small sorted table)</li>
-<li><strong>Later saving</strong> it to disk as sorted files (<strong>SSTables</strong>)</li>
-<li><strong>Merging</strong> old files in the background to keep them organized</li>
-</ul>
-<h2 id="Function">Function</h2>
-<h3 id="LSM-Tree-Overall-Storage-Flow">LSM-Tree Overall Storage Flow</h3>
-<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">             (new writes)</span><br><span class="line">                 ↓</span><br><span class="line">+---------------------------+</span><br><span class="line">|         MemTable          |  (in memory, e.g. skip list, sorted)</span><br><span class="line">+---------------------------+</span><br><span class="line">                 │ flush (when full)</span><br><span class="line">                 ▼</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_1 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">+---------------------------+</span><br><span class="line">|   SSTable_2 (Level 0)     |  &lt;- small, sorted internally</span><br><span class="line">+---------------------------+</span><br><span class="line">          ... more L0 SSTs ...</span><br><span class="line">        (can have overlapping keys)</span><br><span class="line">                 │</span><br><span class="line">                 │ compaction merges &amp; sorts</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 1 SSTables (bigger)                 |</span><br><span class="line">|  - Disjoint key ranges (no overlap between files)   |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">                 │</span><br><span class="line">                 ▼</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">|           Level 2, Level 3 ...                      |</span><br><span class="line">|   - Much larger SSTables                            |</span><br><span class="line">|   - Still disjoint key ranges                       |</span><br><span class="line">+-----------------------------------------------------+</span><br></pre></td></tr></tbody></table></figure>
-]]></content>
-      <categories>
-        <category>DataStructure-Algorithms</category>
-      </categories>
-      <tags>
-        <tag>DataStructure Algorithms</tag>
       </tags>
   </entry>
 </search>
